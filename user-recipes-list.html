@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>User - เมนูทั้งหมด</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              500: '#38bdf8',
+              600: '#0ea5e9'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="./app.js"></script>
+  <style>
+    .drag-handle { cursor: grab; }
+    .dragging { opacity: .5; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<div class="min-h-screen flex flex-col">
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
+      <div class="flex items-center gap-2">
+        <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-emerald-400 to-sky-500 flex items-center justify-center text-xs font-bold">
+          SL
+        </div>
+        <div class="flex flex-col leading-tight">
+          <span class="font-semibold text-slate-100">SweetLab</span>
+          <span class="text-[10px] px-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/40 w-fit">
+            User
+          </span>
+        </div>
+      </div>
+      <nav class="hidden md:flex items-center gap-2 text-sm">
+        <a href="user-recipes-list.html" class="px-3 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40">
+          เมนูทั้งหมด
+        </a>
+      </nav>
+      <div class="flex items-center gap-3 text-xs">
+        <div class="text-right hidden sm:block">
+          <div id="nav-username" class="font-medium text-slate-100"></div>
+          <div id="nav-role" class="text-[11px] text-slate-400"></div>
+        </div>
+        <button id="btn-logout"
+                class="text-xs px-3 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800">
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+  <main class="flex-1">
+    <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl p-5 space-y-4">
+        <div>
+          <h1 class="text-lg font-semibold text-slate-50">เมนูทั้งหมด</h1>
+          <p class="text-xs text-slate-400 mt-1">ผู้ใช้สามารถดูสูตรแต่ละเมนูได้ (อ่านอย่างเดียว)</p>
+        </div>
+        <div id="user-rec-empty" class="text-xs text-slate-400 hidden">ยังไม่มีเมนูในระบบ</div>
+        <div id="user-rec-list" class="grid gap-3 md:grid-cols-2"></div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const user = requireLogin();
+  if (!user) return;
+  initNavbarUser(user);
+
+  const container = document.getElementById('user-rec-list');
+  const empty = document.getElementById('user-rec-empty');
+  const list = getRecipes();
+  if (!list.length) {
+    empty.classList.remove('hidden');
+    return;
+  }
+  list.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'rounded-2xl border border-slate-800 bg-slate-900/70 p-4 flex flex-col gap-2';
+    div.innerHTML = `
+      <div class="text-sm font-semibold text-slate-50">${r.name}</div>
+      <div class="text-[11px] text-slate-400">
+        วัตถุดิบ: ${r.ingredientUsages?.length || 0} รายการ • ขั้นตอน: ${r.steps?.length || 0} ข้อ
+      </div>
+      <a href="user-recipes-view.html?id=${r.id}" class="mt-1 inline-flex items-center justify-center rounded-xl bg-sky-500/90 hover:bg-sky-500 px-3 py-1.5 text-xs font-medium text-white">
+        ดูรายละเอียด
+      </a>
+    `;
+    container.appendChild(div);
+  });
+});
+</script>
+</html>
