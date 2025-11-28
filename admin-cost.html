@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - คำนวณต้นทุน</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              500: '#38bdf8',
+              600: '#0ea5e9'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="./app.js"></script>
+  <style>
+    .drag-handle { cursor: grab; }
+    .dragging { opacity: .5; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<div class="min-h-screen flex flex-col">
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
+      <div class="flex items-center gap-2">
+        <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-xs font-bold">
+          SL
+        </div>
+        <div class="flex flex-col leading-tight">
+          <span class="font-semibold text-slate-100">SweetLab</span>
+          <span class="text-[10px] px-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/40 w-fit">
+            Admin
+          </span>
+        </div>
+      </div>
+      <nav class="hidden md:flex items-center gap-2 text-sm">
+        <a href="admin-ingredients-list.html" class="nav-ing px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          วัตถุดิบ
+        </a>
+        <a href="admin-recipes-list.html" class="nav-rec px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          เมนู & ขั้นตอน
+        </a>
+        <a href="admin-cost.html" class="nav-cost px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          คำนวณต้นทุน
+        </a>
+        <a href="admin-dashboard.html" class="nav-dash px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          Dashboard
+        </a>
+        <a href="admin-roles.html" class="nav-role px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          จัดการสิทธิ์
+        </a>
+        <a href="user-recipes-list.html" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          มุมมองผู้ใช้
+        </a>
+      </nav>
+      <div class="flex items-center gap-3 text-xs">
+        <div class="text-right hidden sm:block">
+          <div id="nav-username" class="font-medium text-slate-100"></div>
+          <div id="nav-role" class="text-[11px] text-slate-400"></div>
+        </div>
+        <button id="btn-logout"
+                class="text-xs px-3 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800">
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+  <main class="flex-1">
+    <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl p-5 space-y-5">
+        <div>
+          <h1 class="text-lg font-semibold text-slate-50">คำนวณต้นทุน & กำไร</h1>
+          <p class="text-xs text-slate-400 mt-1">เลือกเมนู ใส่ต้นทุนรวม จำนวนชิ้น และราคาขายต่อชิ้น</p>
+        </div>
+        <div id="error-box" class="text-xs text-rose-300"></div>
+        <form id="cost-form" class="grid gap-3 text-sm md:grid-cols-4">
+          <div class="md:col-span-2">
+            <label class="block text-slate-200 mb-1">เมนู</label>
+            <select id="cost-recipe" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500"></select>
+          </div>
+          <div>
+            <label class="block text-slate-200 mb-1">ต้นทุนรวม (บาท)</label>
+            <input id="cost-total" type="number" step="0.01" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+          </div>
+          <div>
+            <label class="block text-slate-200 mb-1">จำนวนชิ้นที่ได้</label>
+            <input id="cost-qty" type="number" step="1" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+          </div>
+          <div>
+            <label class="block text-slate-200 mb-1">ราคาขาย/ชิ้น</label>
+            <input id="cost-price" type="number" step="0.01" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+          </div>
+          <div class="md:col-span-3 flex items-end">
+            <button type="submit" class="rounded-xl bg-sky-500 hover:bg-sky-600 px-4 py-2 text-sm font-medium text-white">
+              บันทึกการคำนวณ
+            </button>
+          </div>
+        </form>
+
+        <div class="border-t border-slate-800 pt-4">
+          <h2 class="text-sm font-semibold text-slate-100 mb-2">ประวัติการคำนวณต้นทุน</h2>
+          <div id="cost-empty" class="text-xs text-slate-400 hidden">ยังไม่มีข้อมูลคำนวณ</div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-xs text-left">
+              <thead class="bg-slate-800/80 text-slate-300">
+                <tr>
+                  <th class="px-3 py-2">เมนู</th>
+                  <th class="px-3 py-2">ต้นทุนรวม</th>
+                  <th class="px-3 py-2">จำนวนชิ้น</th>
+                  <th class="px-3 py-2">ราคาขาย/ชิ้น</th>
+                  <th class="px-3 py-2">กำไร/ชิ้น</th>
+                  <th class="px-3 py-2">กำไรรวม</th>
+                </tr>
+              </thead>
+              <tbody id="cost-tbody" class="divide-y divide-slate-800"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const user = requireLogin({ adminOnly:true });
+  if (!user) return;
+  highlightNav('cost');
+  initNavbarUser(user);
+
+  const recipes = getRecipes();
+  const select = document.getElementById('cost-recipe');
+  const errorBox = document.getElementById('error-box');
+  const tbody = document.getElementById('cost-tbody');
+  const empty = document.getElementById('cost-empty');
+
+  function showError(msg) { errorBox.textContent = msg || ''; }
+
+  select.innerHTML = '<option value="">เลือกเมนู</option>';
+  recipes.forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = r.id;
+    opt.textContent = r.name;
+    select.appendChild(opt);
+  });
+
+  function renderTable() {
+    tbody.innerHTML = '';
+    const list = getCosts();
+    if (!list.length) {
+      empty.classList.remove('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+    list.forEach(c => {
+      const rec = recipes.find(r => r.id === c.recipeId);
+      const name = rec ? rec.name : '(เมนูถูกลบแล้ว)';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="px-3 py-2">${name}</td>
+        <td class="px-3 py-2">${c.totalCost.toFixed(2)}</td>
+        <td class="px-3 py-2">${c.quantity}</td>
+        <td class="px-3 py-2">${c.pricePerPiece.toFixed(2)}</td>
+        <td class="px-3 py-2">${c.profitPerPiece.toFixed(2)}</td>
+        <td class="px-3 py-2">${c.totalProfit.toFixed(2)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  renderTable();
+
+  document.getElementById('cost-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const recipeId = select.value;
+    const total = parseFloat(document.getElementById('cost-total').value);
+    const qty = parseFloat(document.getElementById('cost-qty').value);
+    const price = parseFloat(document.getElementById('cost-price').value);
+    if (!recipeId) return showError('กรุณาเลือกเมนู');
+    if (!total || total <= 0) return showError('กรุณากรอกต้นทุนรวม');
+    if (!qty || qty <= 0) return showError('กรุณากรอกจำนวนชิ้น');
+    if (!price || price <= 0) return showError('กรุณากรอกราคาขาย/ชิ้น');
+
+    const costPerPiece = total / qty;
+    const profitPerPiece = price - costPerPiece;
+    const totalProfit = profitPerPiece * qty;
+
+    const list = getCosts();
+    list.push({
+      id: 'cost_' + Date.now(),
+      recipeId,
+      totalCost: total,
+      quantity: qty,
+      pricePerPiece: price,
+      profitPerPiece,
+      totalProfit
+    });
+    setCosts(list);
+    showError('');
+    renderTable();
+  });
+});
+</script>
+</html>

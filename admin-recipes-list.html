@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - เมนู & ขั้นตอน</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              500: '#38bdf8',
+              600: '#0ea5e9'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="./app.js"></script>
+  <style>
+    .drag-handle { cursor: grab; }
+    .dragging { opacity: .5; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<div class="min-h-screen flex flex-col">
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
+      <div class="flex items-center gap-2">
+        <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-xs font-bold">
+          SL
+        </div>
+        <div class="flex flex-col leading-tight">
+          <span class="font-semibold text-slate-100">SweetLab</span>
+          <span class="text-[10px] px-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/40 w-fit">
+            Admin
+          </span>
+        </div>
+      </div>
+      <nav class="hidden md:flex items-center gap-2 text-sm">
+        <a href="admin-ingredients-list.html" class="nav-ing px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          วัตถุดิบ
+        </a>
+        <a href="admin-recipes-list.html" class="nav-rec px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          เมนู & ขั้นตอน
+        </a>
+        <a href="admin-cost.html" class="nav-cost px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          คำนวณต้นทุน
+        </a>
+        <a href="admin-dashboard.html" class="nav-dash px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          Dashboard
+        </a>
+        <a href="admin-roles.html" class="nav-role px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          จัดการสิทธิ์
+        </a>
+        <a href="user-recipes-list.html" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          มุมมองผู้ใช้
+        </a>
+      </nav>
+      <div class="flex items-center gap-3 text-xs">
+        <div class="text-right hidden sm:block">
+          <div id="nav-username" class="font-medium text-slate-100"></div>
+          <div id="nav-role" class="text-[11px] text-slate-400"></div>
+        </div>
+        <button id="btn-logout"
+                class="text-xs px-3 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800">
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+  <main class="flex-1">
+    <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl p-5 space-y-4">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <h1 class="text-lg font-semibold text-slate-50">เมนู & ขั้นตอน</h1>
+            <p class="text-xs text-slate-400">จัดการสูตรขนมทั้งหมด</p>
+          </div>
+          <a href="admin-recipes-form.html"
+             class="inline-flex items-center rounded-xl bg-emerald-500 hover:bg-emerald-600 px-3 py-2 text-xs font-medium text-white">
+            + เพิ่มเมนู
+          </a>
+        </div>
+        <div id="rec-empty" class="text-xs text-slate-400 hidden">ยังไม่มีเมนูในระบบ</div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-xs text-left">
+            <thead class="bg-slate-800/80 text-slate-300">
+              <tr>
+                <th class="px-3 py-2">ชื่อเมนู</th>
+                <th class="px-3 py-2">จำนวนวัตถุดิบ</th>
+                <th class="px-3 py-2">จำนวนขั้นตอน</th>
+                <th class="px-3 py-2 text-right">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="rec-tbody" class="divide-y divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const user = requireLogin({ adminOnly:true });
+  if (!user) return;
+  highlightNav('rec');
+  initNavbarUser(user);
+
+  const tbody = document.getElementById('rec-tbody');
+  const empty = document.getElementById('rec-empty');
+  let list = getRecipes();
+  if (!list.length) {
+    empty.classList.remove('hidden');
+    return;
+  }
+  list.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="px-3 py-2">${r.name}</td>
+      <td class="px-3 py-2">${r.ingredientUsages?.length || 0}</td>
+      <td class="px-3 py-2">${r.steps?.length || 0}</td>
+      <td class="px-3 py-2 text-right space-x-1">
+        <a href="admin-recipes-form.html?id=${r.id}" class="text-xs text-sky-300 hover:underline">แก้ไข</a>
+        <button data-id="${r.id}" class="btn-del text-xs text-rose-400 hover:underline">ลบ</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  tbody.addEventListener('click', e => {
+    if (e.target.classList.contains('btn-del')) {
+      const id = e.target.getAttribute('data-id');
+      if (!confirm('ลบเมนูนี้?')) return;
+      let list = getRecipes().filter(x => x.id !== id);
+      setRecipes(list);
+      location.reload();
+    }
+  });
+});
+</script>
+</html>
