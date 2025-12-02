@@ -9,21 +9,26 @@ M.initMenu = function() {
     admin_form['manage-role'] = 'BakeryManageRoleForm';
 
     var user_page = {};
+    user_page['user-recipe'] = 'BakeryUserRecipe';
+    
     var user_form = {};
+    user_form['user-recipe'] = 'BakeryUserRecipeForm';
 
     var share_page = {};
+    share_page['login'] = 'BakeryUser';
+
     var share_form = {};
 
     M.MENU.admin = {
         page: admin_page,
         form: admin_form,
-        default: 'BakeryLogin'
+        default: 'BakeryUser'
     };
 
     M.MENU.user = {
         page: user_page,
         form: user_form,
-        default: 'BakeryLogin'
+        default: 'BakeryUser'
     };
     
     M.MENU.share = {

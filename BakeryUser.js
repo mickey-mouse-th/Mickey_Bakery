@@ -1,9 +1,9 @@
 window.bakery = window.bakery || {};
-window.bakery.login = function($scope) {
-    this.logPrefix = '[login] ';
+window.bakery.BakeryUser = function($scope) {
+    this.logPrefix = '[BakeryUser] ';
 }
 
-window.bakery.login.prototype = function() {
+window.bakery.BakeryUser.prototype = function() {
     var self = this;
     var init = function ($scope, cb) {
 		self = this;
@@ -31,4 +31,4 @@ window.bakery.login.prototype = function() {
 	};
 	return publicFunctions;
 }();
-//# sourceURL=BakeryLogin
+//# sourceURL=BakeryUser
