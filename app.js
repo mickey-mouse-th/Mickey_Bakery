@@ -76,8 +76,8 @@ function initAuthPage() {
       return;
     }
     setSession(found);
-    if (found.role === 'admin') location.href = 'admin-ingredients-list.html';
-    else location.href = 'user-recipes-list.html';
+    if (found.role === 'admin') location.href = 'BekeryIngredient.html';
+    else location.href = 'BakeryUserRecipe.html';
   });
 
   $('#btn-register').on('click', () => {
@@ -98,7 +98,7 @@ function initAuthPage() {
     users.push(nu);
     setUsers(users);
     setSession(nu);
-    location.href = 'user-recipes-list.html';
+    location.href = 'BakeryUserRecipe.html';
   });
 }
 
@@ -110,7 +110,7 @@ function requireLogin(opts) {
     return null;
   }
   if (opts && opts.adminOnly && session.role !== 'admin') {
-    window.location.href = 'user-recipes-list.html';
+    window.location.href = 'BakeryUserRecipe.html';
     return null;
   }
 

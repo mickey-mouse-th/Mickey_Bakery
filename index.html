@@ -19,48 +19,31 @@
       }
     }
   </script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script defer="defer" src="main.js?d=20251201_1151"></script>
+	<script defer="defer" src="BakeryMenu.js?d=20251201_1151"></script>
   <script src="./app.js"></script>
+  <script src="./BakeryLogin.js"></script>
   <style>
     .drag-handle { cursor: grab; }
     .dragging { opacity: .5; }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
-<div class="min-h-screen flex flex-col">
-
-  <main class="flex-1 flex items-center justify-center">
-    <div class="max-w-md w-full px-4">
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl p-6 space-y-4">
-        <div>
-          <h1 class="text-xl font-semibold text-slate-50">เข้าสู่ระบบ SweetLab</h1>
-          <p class="text-xs text-slate-400 mt-1">จัดการสูตรขนม วัตถุดิบ และต้นทุนของคุณ</p>
-        </div>
-        <div id="auth-error" class="text-xs text-rose-300"></div>
-        <div class="space-y-3">
-          <label class="block text-xs text-slate-300">ชื่อผู้ใช้</label>
-          <input id="auth-username" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500" />
-          <label class="block text-xs text-slate-300 mt-2">รหัสผ่าน</label>
-          <input id="auth-password" type="password" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500" />
-        </div>
-        <div class="flex gap-2 pt-2">
-          <button id="btn-login" class="flex-1 rounded-xl bg-sky-500 hover:bg-sky-600 px-4 py-2 text-sm font-medium text-white">
-            เข้าสู่ระบบ
-          </button>
-          <button id="btn-register" class="flex-1 rounded-xl border border-slate-700 px-4 py-2 text-sm font-medium text-slate-100 hover:bg-slate-800">
-            สมัครสมาชิก
-          </button>
-        </div>
-        <div class="text-[11px] text-slate-500 pt-2" style="display:none">
-          * ระบบมีผู้ดูแลเริ่มต้น: admin / admin123
-        </div>
-      </div>
-    </div>
-  </main>
+<div class="divMainPage min-h-screen flex flex-col">
+  <div class="HF"></div>
+  <div class="HL"></div>
+  <div class="HT"></div>
 </div>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  initAuthPage();
-});
+<script defer="defer" type="text/javascript">
+		$(document).ready(function() {
+			M.init();
+		});
+
+  // document.addEventListener("DOMContentLoaded", () => {
+    
+  //   // initAuthPage();
+  // });
 </script>
 </body>
 </html>

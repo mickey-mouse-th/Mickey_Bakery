@@ -41,7 +41,7 @@
         </div>
       </div>
       <nav class="hidden md:flex items-center gap-2 text-sm">
-        <a href="user-recipes-list.html" class="px-3 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40">
+        <a href="BakeryUserRecipe.html" class="px-3 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40">
           เมนูทั้งหมด
         </a>
       </nav>
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="text-[11px] text-slate-400">
         วัตถุดิบ: ${r.ingredientUsages?.length || 0} รายการ • ขั้นตอน: ${r.steps?.length || 0} ข้อ
       </div>
-      <a href="user-recipes-view.html?id=${r.id}" class="mt-1 inline-flex items-center justify-center rounded-xl bg-sky-500/90 hover:bg-sky-500 px-3 py-1.5 text-xs font-medium text-white">
+      <a href="BakeryUserRecipeForm.html?id=${r.id}" class="mt-1 inline-flex items-center justify-center rounded-xl bg-sky-500/90 hover:bg-sky-500 px-3 py-1.5 text-xs font-medium text-white">
         ดูรายละเอียด
       </a>
     `;

@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin - เมนู & ขั้นตอน</title>
+  <title>Admin - วัตถุดิบ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -41,22 +41,22 @@
         </div>
       </div>
       <nav class="hidden md:flex items-center gap-2 text-sm">
-        <a href="admin-ingredients-list.html" class="nav-ing px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+        <a href="BekeryIngredient.html" class="nav-ing px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
           วัตถุดิบ
         </a>
-        <a href="admin-recipes-list.html" class="nav-rec px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+        <a href="BekeryAdminRecipe.html" class="nav-rec px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
           เมนู & ขั้นตอน
         </a>
-        <a href="admin-cost.html" class="nav-cost px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+        <a href="BakeryCost.html" class="nav-cost px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
           คำนวณต้นทุน
         </a>
-        <a href="admin-dashboard.html" class="nav-dash px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+        <a href="BakeryDashboard.html" class="nav-dash px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
           Dashboard
         </a>
-        <a href="admin-roles.html" class="nav-role px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+        <a href="BakeryManageRole.html" class="nav-role px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
           จัดการสิทธิ์
         </a>
-        <a href="user-recipes-list.html" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+        <a href="BakeryUserRecipe.html" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
           มุมมองผู้ใช้
         </a>
       </nav>
@@ -78,26 +78,28 @@
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl p-5 space-y-4">
         <div class="flex items-center justify-between gap-2">
           <div>
-            <h1 class="text-lg font-semibold text-slate-50">เมนู & ขั้นตอน</h1>
-            <p class="text-xs text-slate-400">จัดการสูตรขนมทั้งหมด</p>
+            <h1 class="text-lg font-semibold text-slate-50">วัตถุดิบ</h1>
+            <p class="text-xs text-slate-400">จัดการวัตถุดิบทั้งหมดที่ใช้ในสูตร</p>
           </div>
-          <a href="admin-recipes-form.html"
+          <a href="BekeryIngredientForm.html"
              class="inline-flex items-center rounded-xl bg-emerald-500 hover:bg-emerald-600 px-3 py-2 text-xs font-medium text-white">
-            + เพิ่มเมนู
+            + เพิ่มวัตถุดิบ
           </a>
         </div>
-        <div id="rec-empty" class="text-xs text-slate-400 hidden">ยังไม่มีเมนูในระบบ</div>
+        <div id="ing-empty" class="text-xs text-slate-400 hidden">ยังไม่มีวัตถุดิบในระบบ</div>
         <div class="overflow-x-auto">
           <table class="min-w-full text-xs text-left">
             <thead class="bg-slate-800/80 text-slate-300">
               <tr>
-                <th class="px-3 py-2">ชื่อเมนู</th>
-                <th class="px-3 py-2">จำนวนวัตถุดิบ</th>
-                <th class="px-3 py-2">จำนวนขั้นตอน</th>
+                <th class="px-3 py-2">ชื่อ</th>
+                <th class="px-3 py-2">ปริมาณ</th>
+                <th class="px-3 py-2">หน่วย</th>
+                <th class="px-3 py-2">ราคา/หน่วย</th>
+                <th class="px-3 py-2">หมายเหตุ</th>
                 <th class="px-3 py-2 text-right">จัดการ</th>
               </tr>
             </thead>
-            <tbody id="rec-tbody" class="divide-y divide-slate-800"></tbody>
+            <tbody id="ing-tbody" class="divide-y divide-slate-800"></tbody>
           </table>
         </div>
       </div>
@@ -111,25 +113,27 @@
 document.addEventListener("DOMContentLoaded", () => {
   const user = requireLogin({ adminOnly:true });
   if (!user) return;
-  highlightNav('rec');
+  highlightNav('ing');
   initNavbarUser(user);
 
-  const tbody = document.getElementById('rec-tbody');
-  const empty = document.getElementById('rec-empty');
-  let list = getRecipes();
+  const tbody = document.getElementById('ing-tbody');
+  const empty = document.getElementById('ing-empty');
+  let list = getIngredients();
   if (!list.length) {
     empty.classList.remove('hidden');
     return;
   }
-  list.forEach(r => {
+  list.forEach(i => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="px-3 py-2">${r.name}</td>
-      <td class="px-3 py-2">${r.ingredientUsages?.length || 0}</td>
-      <td class="px-3 py-2">${r.steps?.length || 0}</td>
+      <td class="px-3 py-2">${i.name}</td>
+      <td class="px-3 py-2">${i.quantity ?? ''}</td>
+      <td class="px-3 py-2">${i.unit}</td>
+      <td class="px-3 py-2">${i.amount}</td>
+      <td class="px-3 py-2">${i.note || ''}</td>
       <td class="px-3 py-2 text-right space-x-1">
-        <a href="admin-recipes-form.html?id=${r.id}" class="text-xs text-sky-300 hover:underline">แก้ไข</a>
-        <button data-id="${r.id}" class="btn-del text-xs text-rose-400 hover:underline">ลบ</button>
+        <a href="BekeryIngredientForm.html?id=${i.id}" class="text-xs text-sky-300 hover:underline">แก้ไข</a>
+        <button data-id="${i.id}" class="btn-del text-xs text-rose-400 hover:underline">ลบ</button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -138,9 +142,9 @@ document.addEventListener("DOMContentLoaded", () => {
   tbody.addEventListener('click', e => {
     if (e.target.classList.contains('btn-del')) {
       const id = e.target.getAttribute('data-id');
-      if (!confirm('ลบเมนูนี้?')) return;
-      let list = getRecipes().filter(x => x.id !== id);
-      setRecipes(list);
+      if (!confirm('ลบวัตถุดิบนี้?')) return;
+      let list = getIngredients().filter(x => x.id !== id);
+      setIngredients(list);
       location.reload();
     }
   });
