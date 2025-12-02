@@ -64,7 +64,7 @@ function initAuthPage() {
   const $uInput = $('#auth-username');
   const $pInput = $('#auth-password');
   const $err = $('#auth-error');
-
+ 
   $('#btn-login').on('click', () => {
     const u = ($uInput.val() || '').trim();
     const p = ($pInput.val() || '').trim();
