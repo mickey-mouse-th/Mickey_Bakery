@@ -1,4 +1,3 @@
-
 // Core localStorage keys
 const LS_USERS = 'sweetlab_users';
 const LS_SESSION = 'sweetlab_session';
@@ -62,40 +61,45 @@ function setCosts(list) { writeJSON(LS_COST, list); }
 
 // Auth helpers
 function initAuthPage() {
-  const uInput = document.getElementById('auth-username');
-  const pInput = document.getElementById('auth-password');
-  const err = document.getElementById('auth-error');
-  document.getElementById('btn-login').onclick = () => {
-    const u = (uInput.value || '').trim();
-    const p = (pInput.value || '').trim();
+  const $uInput = $('#auth-username');
+  const $pInput = $('#auth-password');
+  const $err = $('#auth-error');
+
+  $('#btn-login').on('click', () => {
+    const u = ($uInput.val() || '').trim();
+    const p = ($pInput.val() || '').trim();
     const users = getUsers();
     const found = users.find(x => x.username === u && x.password === p);
+
     if (!found) {
-      err.textContent = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+      $err.text('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
       return;
     }
     setSession(found);
     if (found.role === 'admin') location.href = 'admin-ingredients-list.html';
     else location.href = 'user-recipes-list.html';
-  };
-  document.getElementById('btn-register').onclick = () => {
-    const u = (uInput.value || '').trim();
-    const p = (pInput.value || '').trim();
+  });
+
+  $('#btn-register').on('click', () => {
+    const u = ($uInput.val() || '').trim();
+    const p = ($pInput.val() || '').trim();
     if (!u || !p) {
-      err.textContent = 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน';
+      $err.text('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน');
       return;
     }
     let users = getUsers();
+
     if (users.find(x => x.username === u)) {
-      err.textContent = 'มีชื่อผู้ใช้นี้แล้วในระบบ';
+      $err.text('มีชื่อผู้ใช้นี้แล้วในระบบ');
       return;
     }
+
     const nu = { id: 'u_' + Date.now(), username: u, password: p, role: 'user', createdAt: Date.now() };
     users.push(nu);
     setUsers(users);
     setSession(nu);
     location.href = 'user-recipes-list.html';
-  };
+  });
 }
 
 // Require login
@@ -109,25 +113,25 @@ function requireLogin(opts) {
     window.location.href = 'user-recipes-list.html';
     return null;
   }
+
   // attach logout
   setTimeout(() => {
-    const btn = document.getElementById('btn-logout');
-    if (btn) {
-      btn.onclick = () => {
+    const $btn = $('#btn-logout');
+    if ($btn.length) {
+      $btn.on('click', () => {
         clearSession();
         window.location.href = 'index.html';
-      };
+      });
     }
   }, 0);
+
   return session;
 }
 
 // Navbar helpers
 function initNavbarUser(user) {
-  const nameEl = document.getElementById('nav-username');
-  const roleEl = document.getElementById('nav-role');
-  if (nameEl) nameEl.textContent = user.username;
-  if (roleEl) roleEl.textContent = user.role === 'admin' ? 'Administrator' : 'User';
+  $('#nav-username').text(user.username);
+  $('#nav-role').text(user.role === 'admin' ? 'Administrator' : 'User');
 }
 
 function highlightNav(key) {
@@ -140,8 +144,6 @@ function highlightNav(key) {
   };
   const sel = map[key];
   if (!sel) return;
-  const el = document.querySelector(sel);
-  if (el) {
-    el.classList.add('bg-sky-500/20','text-sky-300','border','border-sky-500/40');
-  }
+
+  $(sel).addClass('bg-sky-500/20 text-sky-300 border border-sky-500/40');
 }
