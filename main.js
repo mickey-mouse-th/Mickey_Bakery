@@ -86,7 +86,7 @@ var M = {
                 var $HF = $divMainPage.find('.HF');
                 var $HL = $divMainPage.find('.HL');
                 var $HT = $divMainPage.find('.HT');
-                var $HI = $HT.clone().removeClass('.HT').addClass('.HI');
+                var $HI = $HT.clone().removeClass('HT').addClass('HI');
                 $HI.attr('data-page', page);
                 $HI.html(data);
                 $HI.show();
