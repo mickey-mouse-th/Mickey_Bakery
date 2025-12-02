@@ -1,5 +1,5 @@
 var M = window.M || {};
-M.initMenu = function() {
+M.initMENU = function() {
     M.MENU = M.MENU || {};
 
     var admin_page = {};
