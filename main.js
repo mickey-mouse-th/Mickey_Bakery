@@ -87,7 +87,7 @@ var M = {
 
                 $.getScript(page + '.js', function () {
                     console.log("โหลด JS สำเร็จ และรันแล้ว");
-                    var script = new window.bakery.BakeryUser();
+                    var script = new window.bakery[page]();
                     script.init($item);
                 });
             },
