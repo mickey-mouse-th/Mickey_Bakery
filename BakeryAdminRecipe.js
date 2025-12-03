@@ -74,6 +74,14 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
         }
     };
 
+    // TODO remove
+    var getRecipes = function() { 
+        return readJSON(LS_REC, []); 
+    };
+    var setRecipes = function(list) { 
+        writeJSON(LS_REC, list); 
+    };
+
     var onLoadDone = function() {
         log('onLoadDone ...');
     };
