@@ -38,6 +38,11 @@ var M = {
             M.main = split[2] || '';
             M.mode = split[1] || '';
             return null;
+
+        } else if (split.length === 2) {
+            M.main = split[1] || '';
+            M.mode = session.role;
+            return null;
         }
         
         // attach logout
