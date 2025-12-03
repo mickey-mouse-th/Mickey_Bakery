@@ -1,72 +1,46 @@
-  <main class="flex-1">
-    <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+<div class="flex-1">
+  <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
 
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl p-5 space-y-4">
-        <div class="flex items-center justify-between gap-2">
-          <div>
-            <h1 class="text-lg font-semibold text-slate-50">เมนู & ขั้นตอน</h1>
-            <p class="text-xs text-slate-400">จัดการสูตรขนมทั้งหมด</p>
-          </div>
-          <a href="BakeryAdminRecipeForm.html"
-              class="inline-flex items-center rounded-xl bg-emerald-500 hover:bg-emerald-600 px-3 py-2 text-xs font-medium text-white">
-            + เพิ่มเมนู
-          </a>
+    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl p-5 space-y-4">
+      <div class="flex items-center justify-between gap-2">
+        <div>
+          <h1 class="text-lg font-semibold text-slate-50">เมนู & ขั้นตอน</h1>
+          <p class="text-xs text-slate-400">จัดการสูตรขนมทั้งหมด</p>
         </div>
-        <div id="rec-empty" class="text-xs text-slate-400 hidden">ยังไม่มีเมนูในระบบ</div>
-        <div class="overflow-x-auto">
-          <table class="min-w-full text-xs text-left">
-            <thead class="bg-slate-800/80 text-slate-300">
-              <tr>
-                <th class="px-3 py-2">ชื่อเมนู</th>
-                <th class="px-3 py-2">จำนวนวัตถุดิบ</th>
-                <th class="px-3 py-2">จำนวนขั้นตอน</th>
-                <th class="px-3 py-2 text-right">จัดการ</th>
-              </tr>
-            </thead>
-            <tbody id="rec-tbody" class="divide-y divide-slate-800"></tbody>
-          </table>
-        </div>
+        <a href="#/admin/form:admin-recipe" class="inline-flex items-center rounded-xl bg-emerald-500 hover:bg-emerald-600 px-3 py-2 text-xs font-medium text-white">+ เพิ่มเมนู</a>
+      </div>
+      <div class="divItemNone text-xs text-slate-400 hidden">ยังไม่มีเมนูในระบบ</div>
+      <div class="divItemList overflow-x-auto hidden">
+        <table class="min-w-full text-xs text-left">
+          <thead class="bg-slate-800/80 text-slate-300">
+            <tr>
+              <th class="px-3 py-2">ชื่อเมนู</th>
+              <th class="px-3 py-2">จำนวนวัตถุดิบ</th>
+              <th class="px-3 py-2">จำนวนขั้นตอน</th>
+              <th class="px-3 py-2 text-right">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800">
+            <tr class="HF hidden"></tr>
+            <tr class="HL hidden"></tr>
+            <tr class="HT hidden" data-form="admin-recipe">
+              <td class="px-3 py-2">
+                <span data-fld="name"></span>
+              </td>
+              <td class="px-3 py-2">
+                <span data-fld="total-ingredient"></span>
+              </td>
+              <td class="px-3 py-2">
+                <span data-fld="total-step"></span>
+              </td>
+              <td class="px-3 py-2 text-right space-x-1">
+                <button class="btnEdit text-xs text-sky-300 hover:underline">แก้ไข</button>
+                <button class="btnDelete text-xs text-rose-400 hover:underline">ลบ</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
-</main>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const user = requireLogin({ adminOnly:true });
-  if (!user) return;
-  highlightNav('rec');
-  initNavbarUser(user);
-
-  const tbody = document.getElementById('rec-tbody');
-  const empty = document.getElementById('rec-empty');
-  let list = getRecipes();
-  if (!list.length) {
-    empty.classList.remove('hidden');
-    return;
-  }
-  list.forEach(r => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="px-3 py-2">${r.name}</td>
-      <td class="px-3 py-2">${r.ingredientUsages?.length || 0}</td>
-      <td class="px-3 py-2">${r.steps?.length || 0}</td>
-      <td class="px-3 py-2 text-right space-x-1">
-        <a href="BakeryAdminRecipeForm.html?id=${r.id}" class="text-xs text-sky-300 hover:underline">แก้ไข</a>
-        <button data-id="${r.id}" class="btn-del text-xs text-rose-400 hover:underline">ลบ</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  tbody.addEventListener('click', e => {
-    if (e.target.classList.contains('btn-del')) {
-      const id = e.target.getAttribute('data-id');
-      if (!confirm('ลบเมนูนี้?')) return;
-      let list = getRecipes().filter(x => x.id !== id);
-      setRecipes(list);
-      location.reload();
-    }
-  });
-});
-</script>
-</html>
+  </div>
+</div>
