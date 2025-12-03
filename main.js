@@ -60,19 +60,15 @@ var M = {
                 var $divMainPage = $('.divMainPage');
                 var $HF = $divMainPage.find('.HF');
                 var $HL = $divMainPage.find('.HL');
-                var $HT = $divMainPage.find('.HT');
-                // var $HI = $HT.clone().removeClass('HT').addClass('HI');
-                // $HI.attr('data-page', page);
-                // $HI.html(data);
-                // $HI.show();
-                // $HI.insertBefore($HL);
-                $HL.after($(data))
+                var $item = $(data);
+                $item.attr('data-page', page);
+                $HL.after($item);
 
-                // $.getScript(page + '.js', function () {
-                //     console.log("โหลด JS สำเร็จ และรันแล้ว");
-                //     var script = new window.bakery.BakeryUser();
-                //     script.init($HI);
-                // });
+                $.getScript(page + '.js', function () {
+                    console.log("โหลด JS สำเร็จ และรันแล้ว");
+                    var script = new window.bakery.BakeryUser();
+                    script.init($item);
+                });
             },
             error: function () {
                 console.log("โหลด HTML ไม่สำเร็จ");
