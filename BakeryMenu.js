@@ -24,19 +24,19 @@ M.initMENU = function() {
     M.MENU.admin = {
         page: admin_page,
         form: admin_form,
-        default: 'BakeryUser'
+        default: 'BakeryAdminRecipe'
     };
 
     M.MENU.user = {
         page: user_page,
         form: user_form,
-        default: 'BakeryUser'
+        default: 'BakeryUserRecipe'
     };
     
     M.MENU.share = {
         page: share_page,
         form: share_form,
-        default: 'BakeryManageRole'
+        default: ''
     };
     
 }

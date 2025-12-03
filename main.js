@@ -25,7 +25,7 @@ var M = {
         }
         var hash = window.location.hash || '';
         if (!hash) {
-            M.main = 'admin-recipe';
+            M.main = '';
             M.mode = session.role;
             return null;
         }
