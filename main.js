@@ -3,12 +3,6 @@ var M = {
     USER: 'user',
     SHARE: 'share',
 
-    LS_USERS: 'sweetlab_users',
-    LS_SESSION: 'sweetlab_session',
-    LS_ING: 'sweetlab_ingredients',
-    LS_REC: 'sweetlab_recipes',
-    LS_COST: 'sweetlab_costs',
-
     init: function() {
         M.initMENU();
 
@@ -81,6 +75,12 @@ var M = {
     }
 }
 
+const LS_USERS = 'sweetlab_users';
+const LS_SESSION = 'sweetlab_session';
+const LS_ING = 'sweetlab_ingredients';
+const LS_REC = 'sweetlab_recipes';
+const LS_COST = 'sweetlab_costs';
+
 function getUsers() {
     const list = readJSON(LS_USERS, []);
     if (!list.length) {
@@ -97,12 +97,6 @@ function getUsers() {
     return list;
   }
 function setUsers(list) { writeJSON(LS_USERS, list); }
-
-const LS_USERS = 'sweetlab_users';
-const LS_SESSION = 'sweetlab_session';
-const LS_ING = 'sweetlab_ingredients';
-const LS_REC = 'sweetlab_recipes';
-const LS_COST = 'sweetlab_costs';
 
 function readJSON(key, def) {
   try {
