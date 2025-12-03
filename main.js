@@ -13,6 +13,12 @@ var M = {
             M.$portal.find('.divHeader').show();
             M.goPageLink();
         }
+
+        window.onhashchange = function(e) {
+            if (!M.requireLogin()) {
+                M.goPageLink();
+            }
+        }
     },
 
     requireLogin: function(opts) {
