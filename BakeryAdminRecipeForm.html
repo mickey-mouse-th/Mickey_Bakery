@@ -41,10 +41,10 @@
         </div>
       </div>
       <nav class="hidden md:flex items-center gap-2 text-sm">
-        <a href="BekeryIngredient.html" class="nav-ing px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+        <a href="BakeryIngredient.html" class="nav-ing px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
           วัตถุดิบ
         </a>
-        <a href="BekeryAdminRecipe.html" class="nav-rec px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+        <a href="BakeryAdminRecipe.html" class="nav-rec px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
           เมนู & ขั้นตอน
         </a>
         <a href="BakeryCost.html" class="nav-cost px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
@@ -123,7 +123,7 @@
             <button type="submit" class="rounded-xl bg-sky-500 hover:bg-sky-600 px-4 py-2 text-sm font-medium text-white">
               บันทึกเมนู
             </button>
-            <a href="BekeryAdminRecipe.html" class="rounded-xl border border-slate-700 px-4 py-2 text-sm font-medium text-slate-100 hover:bg-slate-800/70">
+            <a href="BakeryAdminRecipe.html" class="rounded-xl border border-slate-700 px-4 py-2 text-sm font-medium text-slate-100 hover:bg-slate-800/70">
               ยกเลิก
             </a>
           </div>
@@ -289,7 +289,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (id) list = list.map(r => r.id === id ? data : r);
     else list.push(data);
     setRecipes(list);
-    window.location.href = 'BekeryAdminRecipe.html';
+    window.location.href = 'BakeryAdminRecipe.html';
   });
 });
 </script>

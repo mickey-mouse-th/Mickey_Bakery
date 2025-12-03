@@ -76,7 +76,7 @@ function initAuthPage() {
       return;
     }
     setSession(found);
-    if (found.role === 'admin') location.href = 'BekeryIngredient.html';
+    if (found.role === 'admin') location.href = 'BakeryIngredient.html';
     else location.href = 'BakeryUserRecipe.html';
   });
 

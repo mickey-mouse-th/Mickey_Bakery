@@ -33,25 +33,25 @@ window.bakery.BakeryUser.prototype = function() {
 			return;
 		  }
 		  setSession(found);
-		  if (found.role === 'admin') location.href = 'BekeryIngredient.html';
+		  if (found.role === 'admin') location.href = 'BakeryIngredient.html';
 		  else location.href = 'BakeryUserRecipe.html';
 		});
 	  
-		$('#btn-register').on('click', () => {
-		  const u = ($uInput.val() || '').trim();
-		  const p = ($pInput.val() || '').trim();
+		self.$scope.on('click', '#btn-register', function() {
+		  var u = ($uInput.val() || '').trim();
+		  var p = ($pInput.val() || '').trim();
 		  if (!u || !p) {
 			$err.text('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน');
 			return;
 		  }
-		  let users = getUsers();
+		  var users = getUsers();
 	  
 		  if (users.find(x => x.username === u)) {
 			$err.text('มีชื่อผู้ใช้นี้แล้วในระบบ');
 			return;
 		  }
 	  
-		  const nu = { id: 'u_' + Date.now(), username: u, password: p, role: 'user', createdAt: Date.now() };
+		  var nu = { id: 'u_' + Date.now(), username: u, password: p, role: M.USER, createdAt: Date.now() };
 		  users.push(nu);
 		  setUsers(users);
 		  setSession(nu);

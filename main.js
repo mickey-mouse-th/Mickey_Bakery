@@ -23,7 +23,19 @@ var M = {
             M.mode = M.USER;
             return null;
         }
-    
+        var hash = window.location.hash || '';
+        if (!hash) {
+            M.main = '';
+            M.mode = session.role;
+            return null;
+        }
+        var split = hash.split('/');
+        if (split.length === 3) {
+            M.main = split[2] || '';
+            M.mode = split[1] || '';
+            return null;
+        }
+        
         // attach logout
         // setTimeout(() => {
         //     const $btn = $('#btn-logout');

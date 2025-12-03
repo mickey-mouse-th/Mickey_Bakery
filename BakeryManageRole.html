@@ -41,10 +41,10 @@
         </div>
       </div>
       <nav class="hidden md:flex items-center gap-2 text-sm">
-        <a href="BekeryIngredient.html" class="nav-ing px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+        <a href="BakeryIngredient.html" class="nav-ing px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
           วัตถุดิบ
         </a>
-        <a href="BekeryAdminRecipe.html" class="nav-rec px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+        <a href="BakeryAdminRecipe.html" class="nav-rec px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
           เมนู & ขั้นตอน
         </a>
         <a href="BakeryCost.html" class="nav-cost px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
@@ -114,8 +114,8 @@ document.addEventListener("DOMContentLoaded", () => {
       <td class="px-3 py-2">${u.username}</td>
       <td class="px-3 py-2">
         <select data-uid="${u.id}" class="role-select rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-slate-100">
-          <option value="user" ${u.role === 'user' ? 'selected' : ''}>User</option>
-          <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+          <option value="user" ${u.role === M.USER ? 'selected' : ''}>User</option>
+          <option value="admin" ${u.role === M.ADMIN ? 'selected' : ''}>Admin</option>
         </select>
       </td>
       <td class="px-3 py-2 text-right text-xs text-slate-400">

@@ -3,9 +3,11 @@ M.initMENU = function() {
     M.MENU = M.MENU || {};
 
     var admin_page = {};
+    admin_page['admin-recipe'] = 'BakeryAdminRecipe';
     admin_page['manage-role'] = 'BakeryManageRole';
 
     var admin_form = {};
+    admin_form['admin-recipe'] = 'BakeryAdminRecipeForm';
     admin_form['manage-role'] = 'BakeryManageRoleForm';
 
     var user_page = {};
