@@ -3,10 +3,14 @@ var M = {
     USER: 'user',
     SHARE: 'share',
 
+    $portal: $('.divPortal'),
+
     init: function() {
         M.initMENU();
 
         if (!M.requireLogin()) {
+            M.$portal.find('.divHeader:not([data-mode="' + M.mode + '"]').remove();
+            M.$portal.find('.divHeader').show();
             M.goPageLink();
         }
     },

@@ -28,16 +28,46 @@
     .dragging { opacity: .5; }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen">
-<div class="divMainPage min-h-screen flex flex-col">
-  <div class="HF" style="display:none"></div>
-  <div class="HL" style="display:none"></div>
-  <div class="HT" style="display:none"></div>
-</div>
-<script defer="defer" type="text/javascript">
-		$(document).ready(function() {
-			M.init();
-		});
-</script>
+<body class="divPortal bg-slate-950 text-slate-100 min-h-screen">
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur">
+    <div class="divHeader max-w-6xl mx-auto px-4 flex items-center justify-between h-14" data-mode="user" style="display:none">
+      <div class="flex items-center gap-2">
+        <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-emerald-400 to-sky-500 flex items-center justify-center text-xs font-bold">
+          SL
+        </div>
+        <div class="flex flex-col leading-tight">
+          <span class="font-semibold text-slate-100">SweetLab</span>
+          <span class="text-[10px] px-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/40 w-fit">
+            User
+          </span>
+        </div>
+      </div>
+      <nav class="hidden md:flex items-center gap-2 text-sm">
+        <a href="BakeryUserRecipe.html" class="px-3 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40">
+          เมนูทั้งหมด
+        </a>
+      </nav>
+      <div class="flex items-center gap-3 text-xs">
+        <div class="text-right hidden sm:block">
+          <div id="nav-username" class="font-medium text-slate-100"></div>
+          <div id="nav-role" class="text-[11px] text-slate-400"></div>
+        </div>
+        <button id="btn-logout"
+                class="text-xs px-3 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800">
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="divMainPage min-h-screen flex flex-col">
+    <div class="HF" style="display:none"></div>
+    <div class="HL" style="display:none"></div>
+    <div class="HT" style="display:none"></div>
+  </div>
+  <script defer="defer" type="text/javascript">
+    $(document).ready(function() {
+      M.init();
+    });
+  </script>
 </body>
 </html>
