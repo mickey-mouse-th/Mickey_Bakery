@@ -18,7 +18,7 @@ var M = {
     },
 
     requireLogin: function(opts) {
-        var session = M.getSession();
+        var session = getSession();
         if (!session) {
             M.main = 'login';
             M.mode = M.SHARE;
@@ -44,31 +44,6 @@ var M = {
         return session;
     },
 
-    readJSON: function(key, def) {
-        try {
-            const v = localStorage.getItem(key);
-            if (!v) return def;
-            return JSON.parse(v);
-        } catch (e) {
-            return def;
-        }
-    },
-
-    writeJSON: function(key, value) {
-        localStorage.setItem(key, JSON.stringify(value));
-    },
-
-    setSession: function(user) {
-        M.writeJSON(M.LS_SESSION, { id: user.id, username: user.username, role: user.role });
-    },
-    
-    getSession: function() {
-        return M.readJSON(M.LS_SESSION, null);
-    },
-      
-    clearSession: function() {
-        localStorage.removeItem(M.LS_SESSION);
-    },
 
     goPageLink: function() {
         var menu = M.main || '';
@@ -86,17 +61,18 @@ var M = {
                 var $HF = $divMainPage.find('.HF');
                 var $HL = $divMainPage.find('.HL');
                 var $HT = $divMainPage.find('.HT');
-                var $HI = $HT.clone().removeClass('HT').addClass('HI');
-                $HI.attr('data-page', page);
-                $HI.html(data);
-                $HI.show();
-                $HI.insertBefore($HL);
+                // var $HI = $HT.clone().removeClass('HT').addClass('HI');
+                // $HI.attr('data-page', page);
+                // $HI.html(data);
+                // $HI.show();
+                // $HI.insertBefore($HL);
+                $HL.after($(data))
 
-                $.getScript(page + '.js', function () {
-                    console.log("โหลด JS สำเร็จ และรันแล้ว");
-                    var script = new window.bakery.BakeryUser();
-                    script.init($HI);
-                });
+                // $.getScript(page + '.js', function () {
+                //     console.log("โหลด JS สำเร็จ และรันแล้ว");
+                //     var script = new window.bakery.BakeryUser();
+                //     script.init($HI);
+                // });
             },
             error: function () {
                 console.log("โหลด HTML ไม่สำเร็จ");
@@ -107,4 +83,53 @@ var M = {
     about: function() {
         console.log('[MAIN]')
     }
+}
+
+function getUsers() {
+    const list = readJSON(LS_USERS, []);
+    if (!list.length) {
+      const admin = {
+        id: 'u_admin',
+        username: 'admin',
+        password: 'admin123',
+        role: 'admin',
+        createdAt: Date.now()
+      };
+      writeJSON(LS_USERS, [admin]);
+      return [admin];
+    }
+    return list;
+  }
+function setUsers(list) { writeJSON(LS_USERS, list); }
+
+const LS_USERS = 'sweetlab_users';
+const LS_SESSION = 'sweetlab_session';
+const LS_ING = 'sweetlab_ingredients';
+const LS_REC = 'sweetlab_recipes';
+const LS_COST = 'sweetlab_costs';
+
+function readJSON(key, def) {
+  try {
+    const v = localStorage.getItem(key);
+    if (!v) return def;
+    return JSON.parse(v);
+  } catch (e) {
+    return def;
+  }
+}
+
+function writeJSON(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function setSession(user) {
+    writeJSON(LS_SESSION, { id: user.id, username: user.username, role: user.role });
+}
+  
+function getSession() {
+    return readJSON(LS_SESSION, null);
+}
+  
+function clearSession() {
+    localStorage.removeItem(LS_SESSION);
 }
