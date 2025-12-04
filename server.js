@@ -26,6 +26,11 @@ app.get("/", (req, res) => {
   res.sendFile(process.cwd() + "/public/index.html");
 });
 
+app.get("/api/query", (req, res) => {
+  const rows = await pool.query("SELECT * FROM test_users;");
+  res.json(rows.rows);
+});
+
 // Render uses PORT env
 const port = process.env.PORT || 10000;
 app.listen(port, () => {
