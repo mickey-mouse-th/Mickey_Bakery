@@ -2,8 +2,11 @@ var M = {
     ADMIN: 'admin',
     USER: 'user',
     SHARE: 'share',
+    storageKey: 'bakery',
 
     $portal: $('.divPortal'),
+
+    isDEV: localStorage.isDEV === '1',
 
     init: function() {
         M.initMENU();
@@ -53,7 +56,7 @@ var M = {
         
         // attach logout
         // setTimeout(() => {
-        //     const $btn = $('#btn-logout');
+        //     var $btn = $('#btn-logout');
         //     if ($btn.length) {
         //         $btn.on('click', () => {
         //         clearSession();
@@ -97,21 +100,102 @@ var M = {
         });
     },
 
+    callServer: function(method, path, data) {
+    method = method || 'GET';
+    return new Promise((resolve, reject) => {
+        M.getValidAccessToken()
+        .then((atok) => {
+            var host = '';
+            if (M.isDEV === '1') {
+                host = 'http://localhost:10000';
+            }
+            var url = host + '/' + path; 
+            var timeout = 5000;
+            if (data._timeout) {
+                timeout = data._timeout;
+            }
+
+            $.ajax({
+                method: method,
+                url: url,
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                timeout: timeout,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + atok);
+                },
+                success: function(ret) {
+                    resolve(ret);
+                },
+                error: function(xhr, status, error) {
+                    console.warn("callServer fail: xhr,status,error = ..." + xhr, status, error);
+                    reject(xhr, status, error);
+                }
+            });
+        })
+        .catch(reject);
+    });
+    },
+
+    getValidAccessToken: function() {
+    return new Promise((resolve, reject) => {
+        var accessToken = M.getItemStorage('accessToken');
+        if (!accessToken || M.isTokenExpired(accessToken)) {
+            var refreshToken = M.getItemStorage('refreshToken');
+            $.ajax({
+                method: 'POST',
+                url: '/api/refresh-token',
+                contentType: 'application/json',
+                data: { token: refreshToken },
+                timeout: 5000,
+                success: function(ret) {
+                    M.setItemStorage('accessToken', accessToken);
+                    resolve(accessToken);
+                },
+                error: function(xhr, status, error) {
+                    console.warn("callServer fail: xhr,status,error = ..." + xhr, status, error);
+                    reject(xhr, status, error);
+                }
+            });
+            return;
+        }
+        resolve(accessToken);
+    })},
+
+    isTokenExpired: function(atok) {
+        if (!atok) return true;
+      
+        var payload = JSON.parse(atob(atok.split('.')[1]));
+        var now = Math.floor(Date.now() / 1000);
+        return payload.exp < now;
+    },
+
+    setItemStorage: function(key, data) {
+        var json = JSON.stringify(data);
+        localStorage.setItem(M.storageKey + '_' + key, json);
+    },
+
+    getItemStorage: function(key) {
+        var json = localStorage.getItem(M.storageKey + '_' + key);
+        var data = JSON.parse(json);
+        return data;
+    },
+
     about: function() {
         console.log('[MAIN]')
     }
 }
 
-const LS_USERS = 'sweetlab_users';
-const LS_SESSION = 'sweetlab_session';
-const LS_ING = 'sweetlab_ingredients';
-const LS_REC = 'sweetlab_recipes';
-const LS_COST = 'sweetlab_costs';
+var LS_USERS = 'sweetlab_users';
+var LS_SESSION = 'sweetlab_session';
+var LS_ING = 'sweetlab_ingredients';
+var LS_REC = 'sweetlab_recipes';
+var LS_COST = 'sweetlab_costs';
 
 function getUsers() {
-    const list = readJSON(LS_USERS, []);
+    var list = readJSON(LS_USERS, []);
     if (!list.length) {
-      const admin = {
+      var admin = {
         id: 'u_admin',
         username: 'admin',
         password: 'admin123',
@@ -127,7 +211,7 @@ function setUsers(list) { writeJSON(LS_USERS, list); }
 
 function readJSON(key, def) {
   try {
-    const v = localStorage.getItem(key);
+    var v = localStorage.getItem(key);
     if (!v) return def;
     return JSON.parse(v);
   } catch (e) {
