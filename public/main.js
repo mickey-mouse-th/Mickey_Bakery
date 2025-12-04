@@ -139,6 +139,10 @@ var M = {
 
     getValidAccessToken: function() {
     return new Promise((resolve, reject) => {
+        if (!M.user) {
+            resolve('');
+            return;
+        }
         var accessToken = M.getItemStorage('accessToken');
         if (!accessToken || M.isTokenExpired(accessToken)) {
             var refreshToken = M.getItemStorage('refreshToken');
