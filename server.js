@@ -1,48 +1,72 @@
-if (process.env.NODE_ENV === "DEBUG") {
-  const dotenv = await import("dotenv");
-  dotenv.config();
-}
+// server.js
+// =======================
+// Node.js + Express + PostgreSQL + dotenv (dev only)
+// =======================
 
 import express from 'express';
 import cors from 'cors';
 import pkg from 'pg';
 const { Pool } = pkg;
 
+// -----------------------------------------------------
+// Load dotenv only for local development
+// -----------------------------------------------------
+if (process.env.NODE_ENV === "DEV") {
+  // Dynamic import with top-level await
+  const dotenv = await import("dotenv");
+  dotenv.config();
+}
+
+// -----------------------------------------------------
+// Express setup
+// -----------------------------------------------------
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect PostgreSQL Render
+// -----------------------------------------------------
+// PostgreSQL connection
+// -----------------------------------------------------
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
 });
 
-// API test
+// Test API
 app.get("/api/test", async (req, res) => {
-  const rows = await pool.query("SELECT NOW()");
-  res.json(rows.rows);
+  try {
+    const result = await pool.query("SELECT NOW()");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Database query failed" });
+  }
 });
 
-app.get("/api/test2", async (req, res) => {
-  const rows = await pool.query("SELECT email FROM test_users");
-  res.json(rows.rows);
+// Example query API
+app.get("/api/query", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM test_users");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Database query failed" });
+  }
 });
 
-// Serve frontend
+// -----------------------------------------------------
+// Serve static frontend (public folder)
+// -----------------------------------------------------
 app.use(express.static("public"));
 
 app.get("/", (req, res) => {
   res.sendFile(process.cwd() + "/public/index.html");
 });
 
-app.get("/api/query", async (req, res) => {
-  const rows = await pool.query("SELECT * FROM test_users;");
-  res.json(rows.rows);
-});
-
-// Render uses PORT env
-const port = process.env.PORT || 48531;
+// -----------------------------------------------------
+// Start server
+// -----------------------------------------------------
+const port = process.env.PORT || 10000;
 app.listen(port, () => {
-  console.log(`Server running on ${port}`);
+  console.log(`Server running on port ${port}`);
 });
