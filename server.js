@@ -5,8 +5,8 @@ const pkg = require('pg');
 const { Pool } = pkg;
 
 // Load dotenv only for dev
+const dotenv = require('dotenv');
 if (process.env.NODE_ENV === "DEV") {
-  const dotenv = require('dotenv');
   dotenv.config();
 }
 
