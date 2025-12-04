@@ -1,32 +1,24 @@
-import express from 'express';
-import cors from 'cors';
-import pkg from 'pg';
+// server.js
+const express = require('express');
+const cors = require('cors');
+const pkg = require('pg');
 const { Pool } = pkg;
 
-// -----------------------------------------------------
-// Load dotenv only for local development
-// -----------------------------------------------------
+// Load dotenv only for dev
 if (process.env.NODE_ENV === "DEV") {
-  const dotenv = require("dotenv");
+  const dotenv = require('dotenv');
   dotenv.config();
 }
 
-// -----------------------------------------------------
-// Express setup
-// -----------------------------------------------------
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// -----------------------------------------------------
-// PostgreSQL connection
-// -----------------------------------------------------
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
 });
 
-// Test API
 app.get("/api/test", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
@@ -37,7 +29,6 @@ app.get("/api/test", async (req, res) => {
   }
 });
 
-// Example query API
 app.get("/api/query", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM test_users");
@@ -48,19 +39,8 @@ app.get("/api/query", async (req, res) => {
   }
 });
 
-// -----------------------------------------------------
-// Serve static frontend (public folder)
-// -----------------------------------------------------
 app.use(express.static("public"));
+app.get("/", (req, res) => res.sendFile(process.cwd() + "/public/index.html"));
 
-app.get("/", (req, res) => {
-  res.sendFile(process.cwd() + "/public/index.html");
-});
-
-// -----------------------------------------------------
-// Start server
-// -----------------------------------------------------
 const port = process.env.PORT || 10000;
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+app.listen(port, () => console.log(`Server running on port ${port}`));
