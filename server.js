@@ -13,7 +13,7 @@ const pool = new Pool({
 });
 
 app.get("/test", async (req, res) => {
-  res.json({ message: "Server is running!" });
+  res.json({ message: "Server is running! TEST" });
 });
 
 app.get("/users", async (req, res) => {
