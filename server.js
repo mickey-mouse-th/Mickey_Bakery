@@ -16,17 +16,7 @@ app.use(express.json());
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
-});
-
-app.get("/api/test", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT NOW()");
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Database query failed" });
-  }
+  ssl: { rejectUnauthorized: false }
 });
 
 app.get("/api/query", async (req, res) => {
