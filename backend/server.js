@@ -17,7 +17,7 @@ app.get("/test", async (req, res) => {
 });
 
 app.get("/users", async (req, res) => {
-  const result = await pool.query("SELECT * FROM public.test_users");
+  const result = await pool.query("SELECT * FROM test_users");
   res.json(result.rows);
 });
 
