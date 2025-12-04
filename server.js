@@ -26,7 +26,7 @@ app.get("/", (req, res) => {
   res.sendFile(process.cwd() + "/public/index.html");
 });
 
-app.get("/api/query", (req, res) => {
+app.get("/api/query", async (req, res) => {
   const rows = await pool.query("SELECT * FROM test_users;");
   res.json(rows.rows);
 });
