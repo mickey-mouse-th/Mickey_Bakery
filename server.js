@@ -1,8 +1,3 @@
-// server.js
-// =======================
-// Node.js + Express + PostgreSQL + dotenv (dev only)
-// =======================
-
 import express from 'express';
 import cors from 'cors';
 import pkg from 'pg';
@@ -12,8 +7,7 @@ const { Pool } = pkg;
 // Load dotenv only for local development
 // -----------------------------------------------------
 if (process.env.NODE_ENV === "DEV") {
-  // Dynamic import with top-level await
-  const dotenv = await import("dotenv");
+  const dotenv = require("dotenv");
   dotenv.config();
 }
 
