@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - วัตถุดิบ (ฟอร์ม)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              500: '#38bdf8',
+              600: '#0ea5e9'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="./app.js"></script>
+  <style>
+    .drag-handle { cursor: grab; }
+    .dragging { opacity: .5; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<div class="min-h-screen flex flex-col">
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
+      <div class="flex items-center gap-2">
+        <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-xs font-bold">
+          SL
+        </div>
+        <div class="flex flex-col leading-tight">
+          <span class="font-semibold text-slate-100">SweetLab</span>
+          <span class="text-[10px] px-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/40 w-fit">
+            Admin
+          </span>
+        </div>
+      </div>
+      <nav class="hidden md:flex items-center gap-2 text-sm">
+        <a href="BakeryIngredient.html" class="nav-ing px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          วัตถุดิบ
+        </a>
+        <a href="BakeryAdminRecipe.html" class="nav-rec px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          เมนู & ขั้นตอน
+        </a>
+        <a href="BakeryCost.html" class="nav-cost px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          คำนวณต้นทุน
+        </a>
+        <a href="BakeryDashboard.html" class="nav-dash px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          Dashboard
+        </a>
+        <a href="BakeryManageRole.html" class="nav-role px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          จัดการสิทธิ์
+        </a>
+        <a href="BakeryUserRecipe.html" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
+          มุมมองผู้ใช้
+        </a>
+      </nav>
+      <div class="flex items-center gap-3 text-xs">
+        <div class="text-right hidden sm:block">
+          <div id="nav-username" class="font-medium text-slate-100"></div>
+          <div id="nav-role" class="text-[11px] text-slate-400"></div>
+        </div>
+        <button id="btn-logout"
+                class="text-xs px-3 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800">
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+  <main class="flex-1">
+    <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl p-5 space-y-4">
+        <div>
+          <h1 id="form-title" class="text-lg font-semibold text-slate-50">เพิ่มวัตถุดิบใหม่</h1>
+          <p class="text-xs text-slate-400 mt-1">กำหนดข้อมูลวัตถุดิบ: ชื่อ ปริมาณ หน่วย ราคา และหมายเหตุ</p>
+        </div>
+        <div id="error-box" class="text-xs text-rose-300"></div>
+        <form id="ingredient-form" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-sm">
+            <div>
+              <label class="block text-slate-200 mb-1">ชื่อวัตถุดิบ</label>
+              <input id="name" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+            </div>
+            <div>
+              <label class="block text-slate-200 mb-1">ปริมาณทั้งหมด</label>
+              <input id="quantity" type="number" step="0.01" placeholder="เช่น 1000" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+            </div>
+            <div>
+              <label class="block text-slate-200 mb-1">หน่วย</label>
+              <input id="unit" placeholder="กรัม / ml / ช้อนชา" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+            </div>
+            <div>
+              <label class="block text-slate-200 mb-1">ราคา/หน่วย</label>
+              <input id="amount" type="number" step="0.01" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+            </div>
+            <div>
+              <label class="block text-slate-200 mb-1">หมายเหตุ</label>
+              <input id="note" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+            </div>
+          </div>
+          <div class="flex gap-2 pt-2">
+            <button type="submit" class="rounded-xl bg-sky-500 hover:bg-sky-600 px-4 py-2 text-xs font-medium text-white">
+              บันทึก
+            </button>
+            <a href="BakeryIngredient.html" class="rounded-xl border border-slate-700 px-4 py-2 text-xs font-medium text-slate-100 hover:bg-slate-800">
+              ยกเลิก
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const user = requireLogin({ adminOnly:true });
+  if (!user) return;
+  highlightNav('ing');
+  initNavbarUser(user);
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+
+  const titleEl = document.getElementById('form-title');
+  const nameInput = document.getElementById('name');
+  const unitInput = document.getElementById('unit');
+  const amountInput = document.getElementById('amount');
+  const quantityInput = document.getElementById('quantity');
+  const noteInput = document.getElementById('note');
+  const errorBox = document.getElementById('error-box');
+
+  function showError(msg) {
+    errorBox.textContent = msg || '';
+  }
+
+  if (id) {
+    const ing = getIngredients().find(i => i.id === id);
+    if (ing) {
+      titleEl.textContent = 'แก้ไขวัตถุดิบ';
+      nameInput.value = ing.name;
+      unitInput.value = ing.unit;
+      amountInput.value = ing.amount;
+      quantityInput.value = ing.quantity ?? '';
+      noteInput.value = ing.note || '';
+    }
+  }
+
+  document.getElementById('ingredient-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = nameInput.value.trim();
+    const unit = unitInput.value.trim();
+    const amount = parseFloat(amountInput.value);
+    const qty = parseFloat(quantityInput.value);
+    const note = noteInput.value.trim();
+    if (!name || !unit) return showError('กรุณากรอกชื่อและหน่วย');
+    if (!qty || qty <= 0) return showError('ปริมาณทั้งหมดต้องมากกว่า 0');
+    if (!amount || amount <= 0) return showError('ราคา/หน่วยต้องมากกว่า 0');
+    let list = getIngredients();
+    if (id) {
+      list = list.map(i => i.id === id ? { id, name, unit, amount, quantity: qty, note } : i);
+    } else {
+      list.push({ id: 'ing_' + Date.now(), name, unit, amount, quantity: qty, note });
+    }
+    setIngredients(list);
+    window.location.href = 'BakeryIngredient.html';
+  });
+});
+</script>
+</html>

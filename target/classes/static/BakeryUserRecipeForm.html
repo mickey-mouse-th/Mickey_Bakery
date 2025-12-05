@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>User - ดูรายละเอียดเมนู</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              500: '#38bdf8',
+              600: '#0ea5e9'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="./app.js"></script>
+  <style>
+    .drag-handle { cursor: grab; }
+    .dragging { opacity: .5; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<div class="min-h-screen flex flex-col">
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
+      <div class="flex items-center gap-2">
+        <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-emerald-400 to-sky-500 flex items-center justify-center text-xs font-bold">
+          SL
+        </div>
+        <div class="flex flex-col leading-tight">
+          <span class="font-semibold text-slate-100">SweetLab</span>
+          <span class="text-[10px] px-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/40 w-fit">
+            User
+          </span>
+        </div>
+      </div>
+      <nav class="hidden md:flex items-center gap-2 text-sm">
+        <a href="BakeryUserRecipe.html" class="px-3 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40">
+          เมนูทั้งหมด
+        </a>
+      </nav>
+      <div class="flex items-center gap-3 text-xs">
+        <div class="text-right hidden sm:block">
+          <div id="nav-username" class="font-medium text-slate-100"></div>
+          <div id="nav-role" class="text-[11px] text-slate-400"></div>
+        </div>
+        <button id="btn-logout"
+                class="text-xs px-3 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800">
+          Logout
+        </button>
+      </div>
+    </div>
+  </header>
+  <main class="flex-1">
+    <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl p-5 space-y-5">
+        <div>
+          <h1 id="recipe-title" class="text-lg font-semibold text-slate-50">กำลังโหลด...</h1>
+          <p class="text-xs text-slate-400 mt-1">รายละเอียดสูตรสำหรับผู้ใช้ (อ่านอย่างเดียว)</p>
+        </div>
+        <div id="error-box" class="text-xs text-rose-300"></div>
+        <section>
+          <h2 class="text-sm font-semibold text-slate-200 mb-2">วัตถุดิบ</h2>
+          <ul id="ingredient-list" class="list-disc list-inside text-xs text-slate-200 space-y-1"></ul>
+        </section>
+        <section>
+          <h2 class="text-sm font-semibold text-slate-200 mb-2">ขั้นตอนการทำ</h2>
+          <ol id="step-list" class="list-decimal list-inside text-xs text-slate-200 space-y-1"></ol>
+        </section>
+        <a href="BakeryUserRecipe.html" class="inline-flex items-center justify-center rounded-xl border border-slate-700 px-4 py-2 text-xs font-medium text-slate-100 hover:bg-slate-800/80">
+          ← กลับไปหน้าเมนูทั้งหมด
+        </a>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const user = requireLogin();
+  if (!user) return;
+  initNavbarUser(user);
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  const recipes = getRecipes();
+  const ingredients = getIngredients();
+  const rec = recipes.find(r => r.id === id);
+  const errorBox = document.getElementById('error-box');
+
+  if (!rec) {
+    errorBox.textContent = 'ไม่พบเมนูนี้ในระบบ';
+    return;
+  }
+
+  document.getElementById('recipe-title').textContent = rec.name;
+
+  const ingList = document.getElementById('ingredient-list');
+  (rec.ingredientUsages || []).forEach(u => {
+    const ing = ingredients.find(i => i.id === u.ingredientId);
+    if (ing) {
+      const li = document.createElement('li');
+      li.textContent = `${ing.name} – ${u.quantity} ${ing.unit}`;
+      ingList.appendChild(li);
+    }
+  });
+
+  const stepList = document.getElementById('step-list');
+  (rec.steps || []).forEach(s => {
+    const li = document.createElement('li');
+    li.textContent = s;
+    stepList.appendChild(li);
+  });
+});
+</script>
+</html>

@@ -1,0 +1,46 @@
+<div class="flex-1">
+  <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+
+    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl p-5 space-y-4">
+      <div class="flex items-center justify-between gap-2">
+        <div>
+          <h1 class="text-lg font-semibold text-slate-50">เมนู & ขั้นตอน</h1>
+          <p class="text-xs text-slate-400">จัดการสูตรขนมทั้งหมด</p>
+        </div>
+        <a href="#/admin/form:admin-recipe" class="inline-flex items-center rounded-xl bg-emerald-500 hover:bg-emerald-600 px-3 py-2 text-xs font-medium text-white">+ เพิ่มเมนู</a>
+      </div>
+      <div class="divItemNone text-xs text-slate-400 hidden">ยังไม่มีเมนูในระบบ</div>
+      <div class="divItemList overflow-x-auto hidden">
+        <table class="min-w-full text-xs text-left">
+          <thead class="bg-slate-800/80 text-slate-300">
+            <tr>
+              <th class="px-3 py-2">ชื่อเมนู</th>
+              <th class="px-3 py-2">จำนวนวัตถุดิบ</th>
+              <th class="px-3 py-2">จำนวนขั้นตอน</th>
+              <th class="px-3 py-2 text-right">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800">
+            <tr class="HF hidden"></tr>
+            <tr class="HL hidden"></tr>
+            <tr class="HT hidden" data-form="admin-recipe">
+              <td class="px-3 py-2">
+                <span data-fld="name"></span>
+              </td>
+              <td class="px-3 py-2">
+                <span data-fld="total-ingredient"></span>
+              </td>
+              <td class="px-3 py-2">
+                <span data-fld="total-step"></span>
+              </td>
+              <td class="px-3 py-2 text-right space-x-1">
+                <button class="btnEdit text-xs text-sky-300 hover:underline">แก้ไข</button>
+                <button class="btnDelete text-xs text-rose-400 hover:underline">ลบ</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
