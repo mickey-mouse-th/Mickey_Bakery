@@ -109,19 +109,24 @@ var M = {
         .then((atok) => {
             var host = '';
             if (M.isDEV === '1') {
-                host = 'http://localhost:10000';
+                host = 'http://localhost:8080';
             }
             var url = host + '/' + path; 
             var timeout = 5000;
             if (data._timeout) {
                 timeout = data._timeout;
             }
+            if (method === 'GET') {
+                data = Object.entries(data).map(o => o[0] + "=" + o[1]).join("&");
+            } else {
+                data = JSON.stringify(data);
+            };
 
             $.ajax({
                 method: method,
                 url: url,
                 contentType: 'application/json',
-                data: JSON.stringify(data),
+                data: data,
                 timeout: timeout,
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader('Authorization', 'Bearer ' + atok);

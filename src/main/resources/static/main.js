@@ -109,7 +109,7 @@ var M = {
         .then((atok) => {
             var host = '';
             if (M.isDEV === '1') {
-                host = 'http://localhost:10000';
+                host = 'http://localhost:8080';
             }
             var url = host + '/' + path; 
             var timeout = 5000;
