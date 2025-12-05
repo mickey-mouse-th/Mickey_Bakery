@@ -100,86 +100,118 @@ var M = {
         });
     },
 
-    // accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiaWF0IjoxNzY0ODY4NTY0LCJleHAiOjE3NjQ4Njk0NjR9.UzmTTp4U0_Zwp9x5ipfx51byfod-IS8G0DOObzZbbBg"
-    // refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiaWF0IjoxNzY0ODY4NTY0LCJleHAiOjE3NjU0NzMzNjR9.DPjRM8WVBRymWZ-a4PUgn_w3h1vyHBb5b7LVvAtE-Vg"
     callServer: function(method, path, data) {
-    method = method || 'GET';
+    method = (method || 'GET').toUpperCase();
+    path = path.replace(/^\/+/, '');
+    data = data || {};
+
     return new Promise((resolve, reject) => {
+        if (!path) {
+            reject('No path to call');
+            return;
+        }
+
         M.getValidAccessToken()
         .then((atok) => {
-            var host = '';
-            if (M.isDEV === '1') {
-                host = 'http://localhost:8080';
-            }
-            var url = host + '/' + path; 
+
+            var tokenStr = atok ? atok.token : '';
+
+            var host = (M.isDEV === '1') ? 'http://localhost:8080' : '';
+            var url = host + '/' + path;
+
             var timeout = 5000;
             if (data._timeout) {
                 timeout = data._timeout;
+                delete data._timeout;
             }
-            if (method === 'GET') {
-                data = Object.entries(data).map(o => o[0] + "=" + o[1]).join("&");
-            } else {
-                data = JSON.stringify(data);
-            };
 
-            $.ajax({
+            var option = {
                 method: method,
                 url: url,
-                contentType: 'application/json',
-                data: data,
                 timeout: timeout,
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader('Authorization', 'Bearer ' + atok);
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + tokenStr);
                 },
                 success: function(ret) {
                     resolve(ret);
                 },
                 error: function(xhr, status, error) {
-                    console.warn("callServer fail: xhr,status,error = ..." + xhr, status, error);
-                    reject(xhr, status, error);
+                    reject({ xhr, status, error });
                 }
-            });
+            };
+
+            if (method === 'POST' || method === 'PUT') {
+                option.data = JSON.stringify(data);
+                option.contentType = 'application/json';
+            } else {
+                option.data = data;
+            }
+
+            $.ajax(option);
         })
         .catch(reject);
     });
     },
-
+    
     getValidAccessToken: function() {
     return new Promise((resolve, reject) => {
-        if (!M.user) {
-            resolve('');
+        var user = M.getItemStorage('user')
+        if (!user) {
+            resolve(null);
             return;
         }
-        var accessToken = M.getItemStorage('accessToken');
-        if (!accessToken || M.isTokenExpired(accessToken)) {
+
+        var accessTokenItem = M.getItemStorage('accessTokenItem');
+        if (!accessTokenItem || M.isTokenExpired(accessTokenItem)) {
             var refreshToken = M.getItemStorage('refreshToken');
+            if (!refreshToken) {
+                reject({ logout: true });
+                return;
+            }
+
             $.ajax({
                 method: 'POST',
                 url: '/api/refresh-token',
                 contentType: 'application/json',
-                data: { token: refreshToken },
+                data: JSON.stringify({ token: refreshToken }),
                 timeout: 5000,
                 success: function(ret) {
-                    M.setItemStorage('accessToken', accessToken);
-                    resolve(accessToken);
+
+                    if (ret.status !== "OK") {
+                        reject({ status: ret.status || "FAIL", reason: ret.reason || "Unknown error" });
+                        return;
+                    }
+
+                    var expire_minute = ret.expire_minute || 15;
+                    accessTokenItem = {
+                        token: ret.token,
+                        expireTs: Date.now() + (expire_minute * 60 * 1000)
+                    };
+
+                    M.setItemStorage('accessTokenItem', accessTokenItem);
+                    resolve(accessTokenItem);
                 },
                 error: function(xhr, status, error) {
-                    console.warn("callServer fail: xhr,status,error = ..." + xhr, status, error);
-                    reject(xhr, status, error);
+                    reject({ xhr, status, error });
                 }
             });
+
             return;
         }
-        resolve(accessToken);
-    })},
 
+        resolve(accessTokenItem); // <<< ส่ง object
+    });
+    },
+    
     isTokenExpired: function(atok) {
         if (!atok) return true;
-      
-        var payload = JSON.parse(atob(atok.split('.')[1]));
-        var now = Math.floor(Date.now() / 1000);
-        return payload.exp < now;
+    
+        if (!atok.expireTs) return true;
+    
+        var now = Date.now();
+        return now > atok.expireTs;
     },
+    
 
     setItemStorage: function(key, data) {
         var json = JSON.stringify(data);
@@ -188,8 +220,13 @@ var M = {
 
     getItemStorage: function(key) {
         var json = localStorage.getItem(M.storageKey + '_' + key);
-        var data = JSON.parse(json);
-        return data;
+        if (!json) return null;
+    
+        try {
+            return JSON.parse(json);
+        } catch (e) {
+            return null;
+        }
     },
 
     about: function() {
