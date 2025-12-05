@@ -1,7 +1,0 @@
-com/bakery/bakery/entity/User.class
-com/bakery/bakery/config/SecurityConfig.class
-com/bakery/bakery/BakeryApplication.class
-com/bakery/controller/UserController.class
-com/bakery/bakery/repository/UserRepository.class
-com/bakery/bakery/controller/HomeController.class
-com/bakery/bakery/controller/TestController.class
