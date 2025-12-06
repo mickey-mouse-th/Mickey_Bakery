@@ -3,6 +3,10 @@ var M = {
     USER: 'user',
     SHARE: 'share',
     storageKey: 'bakery',
+    roleTypeMap: {
+        '0': M.USER,
+        '1': M.ADMIN
+    },
 
     $portal: $('.divPortal'),
 
@@ -29,13 +33,15 @@ var M = {
     },
 
     requireLogin: function(opts) {
-        var session = getSession();
-        if (!session) {
+        var user = M.getItemStorage('user');
+        if (!user) {
             M.main = 'login';
             M.mode = M.SHARE;
             return null;
         }
-        if (opts && opts.adminOnly && session.role !== M.ADMIN) {
+
+        var role = roleTypeMap[user.roleType] || M.USER;
+        if (opts && opts.adminOnly && role != M.ADMIN) {
             M.main = 'user-recipe';
             M.mode = '';
             return null;
@@ -43,7 +49,7 @@ var M = {
         var hash = window.location.hash || '';
         if (!hash) {
             M.main = '';
-            M.mode = session.role;
+            M.mode = role;
             return null;
         }
         var split = hash.split('/');
@@ -54,11 +60,11 @@ var M = {
 
         } else if (split.length === 2) {
             M.main = split[1] || '';
-            M.mode = session.role;
+            M.mode = role;
             return null;
         }
         
-        return session;
+        return user;
     },
 
 
