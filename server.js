@@ -123,5 +123,5 @@ app.get('/api/query', authenticateToken, async (req, res) => {
 app.use(express.static("public"));
 app.get("/", (req, res) => res.sendFile(process.cwd() + "/public/index.html"));
 
-const port = process.env.PORT || 10000;
+const port = process.env.PORT || 8080;
 app.listen(port, () => console.log(`Server running on port ${port}`));

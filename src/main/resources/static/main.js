@@ -22,6 +22,10 @@ var M = {
                 M.goPageLink();
             }
         }
+        M.$portal.on('click', '#btn-logout', function() {
+            clearSession();
+            window.location.href = '';
+        });
     },
 
     requireLogin: function(opts) {
@@ -54,17 +58,6 @@ var M = {
             return null;
         }
         
-        // attach logout
-        // setTimeout(() => {
-        //     var $btn = $('#btn-logout');
-        //     if ($btn.length) {
-        //         $btn.on('click', () => {
-        //         clearSession();
-        //             window.location.href = '';
-        //         });
-        //     }
-        // }, 0);
-    
         return session;
     },
 
