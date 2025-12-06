@@ -222,6 +222,47 @@ var M = {
         }
     },
 
+    showNotification: function(msg, status) {
+        status = status || 'done';
+        var $container = M.$portal.find("#notification-container");
+    
+        var $notif = $("<div></div>")
+        $notif.addClass('flex items-center p-3 rounded-lg shadow-lg text-white min-w-[250px] transition-transform transform translate-x-20 opacity-0');
+    
+        var iconSvg = "";
+        if (status === "done") {
+            $notif.addClass("bg-green-500");
+            iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 mr-2 flex-shrink-0">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>`;
+        } else if (status === "fail") {
+            $notif.addClass("bg-red-500");
+            iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 mr-2 flex-shrink-0">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>`;
+        } else {
+            $notif.addClass("bg-gray-600");
+            iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 mr-2 flex-shrink-0">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 6a9 9 0 110 18 9 9 0 010-18z"/>
+            </svg>`;
+        }
+    
+        $notif.html(iconSvg + `<span>${msg}</span>`);
+        $container.append($notif);
+    
+        // Animate in
+        requestAnimationFrame(() => {
+            $notif.removeClass("translate-x-20", "opacity-0");
+            $notif.addClass("translate-x-0", "opacity-100");
+        });
+    
+        // Auto remove
+        setTimeout(() => {
+            $notif.addClass("translate-x-20", "opacity-0");
+            setTimeout(() => $notif.remove(), 300);
+        }, 3000);
+    },
+
     about: function() {
         console.log('[MAIN]')
     }

@@ -1,153 +1,34 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-  <meta charset="UTF-8" />
-  <title>Admin - วัตถุดิบ</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              500: '#38bdf8',
-              600: '#0ea5e9'
-            }
-          }
-        }
-      }
-    }
-  </script>
-  <script src="./app.js"></script>
-  <style>
-    .drag-handle { cursor: grab; }
-    .dragging { opacity: .5; }
-  </style>
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen">
-<div class="min-h-screen flex flex-col">
-  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur">
-    <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
-      <div class="flex items-center gap-2">
-        <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-xs font-bold">
-          SL
-        </div>
-        <div class="flex flex-col leading-tight">
-          <span class="font-semibold text-slate-100">SweetLab</span>
-          <span class="text-[10px] px-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/40 w-fit">
-            Admin
-          </span>
-        </div>
-      </div>
-      <nav class="hidden md:flex items-center gap-2 text-sm">
-        <a href="BakeryIngredient.html" class="nav-ing px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
-          วัตถุดิบ
-        </a>
-        <a href="BakeryAdminRecipe.html" class="nav-rec px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
-          เมนู & ขั้นตอน
-        </a>
-        <a href="BakeryCost.html" class="nav-cost px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
-          คำนวณต้นทุน
-        </a>
-        <a href="BakeryDashboard.html" class="nav-dash px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
-          Dashboard
-        </a>
-        <a href="BakeryManageRole.html" class="nav-role px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
-          จัดการสิทธิ์
-        </a>
-        <a href="BakeryUserRecipe.html" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/70">
-          มุมมองผู้ใช้
-        </a>
-      </nav>
-      <div class="flex items-center gap-3 text-xs">
-        <div class="text-right hidden sm:block">
-          <div id="nav-username" class="font-medium text-slate-100"></div>
-          <div id="nav-role" class="text-[11px] text-slate-400"></div>
-        </div>
-        <button id="btn-logout"
-                class="text-xs px-3 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800">
-          Logout
-        </button>
-      </div>
-    </div>
-  </header>
-  <main class="flex-1">
-    <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
-
+<div class="flex-1">
+  <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl p-5 space-y-4">
-        <div class="flex items-center justify-between gap-2">
-          <div>
-            <h1 class="text-lg font-semibold text-slate-50">วัตถุดิบ</h1>
-            <p class="text-xs text-slate-400">จัดการวัตถุดิบทั้งหมดที่ใช้ในสูตร</p>
+          <div class="flex items-center justify-between gap-2">
+              <div>
+                  <h1 class="text-lg font-semibold text-slate-50">วัตถุดิบ</h1>
+                  <p class="text-xs text-slate-400">จัดการวัตถุดิบทั้งหมดที่ใช้ในสูตร</p>
+              </div>
+              <a href="BakeryIngredientForm.html"
+                 class="inline-flex items-center rounded-xl bg-emerald-500 hover:bg-emerald-600 px-3 py-2 text-xs font-medium text-white">
+                  + เพิ่มวัตถุดิบ
+              </a>
           </div>
-          <a href="BakeryIngredientForm.html"
-             class="inline-flex items-center rounded-xl bg-emerald-500 hover:bg-emerald-600 px-3 py-2 text-xs font-medium text-white">
-            + เพิ่มวัตถุดิบ
-          </a>
-        </div>
-        <div id="ing-empty" class="text-xs text-slate-400 hidden">ยังไม่มีวัตถุดิบในระบบ</div>
-        <div class="overflow-x-auto">
-          <table class="min-w-full text-xs text-left">
-            <thead class="bg-slate-800/80 text-slate-300">
-              <tr>
-                <th class="px-3 py-2">ชื่อ</th>
-                <th class="px-3 py-2">ปริมาณ</th>
-                <th class="px-3 py-2">หน่วย</th>
-                <th class="px-3 py-2">ราคา/หน่วย</th>
-                <th class="px-3 py-2">หมายเหตุ</th>
-                <th class="px-3 py-2 text-right">จัดการ</th>
-              </tr>
-            </thead>
-            <tbody id="ing-tbody" class="divide-y divide-slate-800"></tbody>
-          </table>
-        </div>
+
+          <div id="ing-empty" class="text-xs text-slate-400 hidden">ยังไม่มีวัตถุดิบในระบบ</div>
+
+          <div class="overflow-x-auto">
+              <table class="min-w-full text-xs text-left">
+                  <thead class="bg-slate-800/80 text-slate-300">
+                      <tr>
+                          <th class="px-3 py-2">ชื่อ</th>
+                          <th class="px-3 py-2">ปริมาณ</th>
+                          <th class="px-3 py-2">หน่วย</th>
+                          <th class="px-3 py-2">ราคา/หน่วย</th>
+                          <th class="px-3 py-2">หมายเหตุ</th>
+                          <th class="px-3 py-2 text-right">จัดการ</th>
+                      </tr>
+                  </thead>
+                  <tbody id="ing-tbody" class="divide-y divide-slate-800"></tbody>
+              </table>
+          </div>
       </div>
-    </div>
-  </main>
+  </div>
 </div>
-</body>
-</html>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const user = requireLogin({ adminOnly:true });
-  if (!user) return;
-  highlightNav('ing');
-  initNavbarUser(user);
-
-  const tbody = document.getElementById('ing-tbody');
-  const empty = document.getElementById('ing-empty');
-  let list = getIngredients();
-  if (!list.length) {
-    empty.classList.remove('hidden');
-    return;
-  }
-  list.forEach(i => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="px-3 py-2">${i.name}</td>
-      <td class="px-3 py-2">${i.quantity ?? ''}</td>
-      <td class="px-3 py-2">${i.unit}</td>
-      <td class="px-3 py-2">${i.amount}</td>
-      <td class="px-3 py-2">${i.note || ''}</td>
-      <td class="px-3 py-2 text-right space-x-1">
-        <a href="BakeryIngredientForm.html?id=${i.id}" class="text-xs text-sky-300 hover:underline">แก้ไข</a>
-        <button data-id="${i.id}" class="btn-del text-xs text-rose-400 hover:underline">ลบ</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  tbody.addEventListener('click', e => {
-    if (e.target.classList.contains('btn-del')) {
-      const id = e.target.getAttribute('data-id');
-      if (!confirm('ลบวัตถุดิบนี้?')) return;
-      let list = getIngredients().filter(x => x.id !== id);
-      setIngredients(list);
-      location.reload();
-    }
-  });
-});
-</script>
-</html>

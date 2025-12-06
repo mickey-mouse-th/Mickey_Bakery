@@ -90,7 +90,7 @@ public class QBakery {
         	        String fieldTo = fArr.size() >=2 ? fArr.get(1) : "";
         	        setFieldList(!fieldTo.isEmpty() ? fieldTo : fieldFo);
         	        if (!fieldTo.isEmpty()) fieldMap.put(fieldTo, fieldFo);
-        	        return alias + "." + fieldFo + (!fieldTo.isEmpty() ? (" AS " + fieldTo) : "");
+        	        return alias + "." + "\"" + fieldFo + "\"" + (!fieldTo.isEmpty() ? (" AS " + fieldTo) : "");
         	    })
         	    .collect(Collectors.joining(","));
             return this;
@@ -224,8 +224,8 @@ public class QBakery {
         return this;
     }
 
-    public QBakery value(String col, Object val) {
-        insertValues.put(col, val);
+    public QBakery value(Map<String, Object> values) {
+        insertValues.putAll(values);
         return this;
     }
 
@@ -282,10 +282,10 @@ public class QBakery {
             if (i == 0) {
             	sb.append("SELECT " + (fields.isEmpty() ? "*" : fields));
             	sb.append("\nFROM ");
-                sb.append(t.tableName).append(" ").append(t.alias);
+                sb.append("\"" + t.tableName + "\"").append(" ").append(t.alias);
             } else {
                 sb.append("\n").append(t.joinType)
-                  .append(" ").append(t.tableName).append(" ").append(t.alias)
+                  .append(" ").append("\"" + t.tableName + "\"").append(" ").append(t.alias)
                   .append(" ON ").append(t.joinOn);
             }
             StringBuilder where = t.getWhere();
@@ -317,21 +317,21 @@ public class QBakery {
     }
 
     // --- INSERT SQL ---
-//    private String buildInsert() {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("INSERT INTO ").append(targetTable).append(" (");
-//
-//        sb.append(String.join(", ", insertValues.keySet()));
-//        sb.append(")\nVALUES (");
-//
-//        String q = String.join(", ", Collections.nCopies(insertValues.size(), "?"));
-//        sb.append(q).append(")");
-//
-//        params.clear();
-//        params.addAll(insertValues.values());
-//
-//        return sb.toString();
-//    }
+    private String buildInsert() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO ").append(targetTable).append(" (");
+
+        sb.append(String.join(", ", insertValues.keySet()));
+        sb.append(")\nVALUES (");
+
+        String q = String.join(", ", Collections.nCopies(insertValues.size(), "?"));
+        sb.append(q).append(")");
+
+        params.clear();
+        params.addAll(insertValues.values());
+
+        return sb.toString();
+    }
 //
 //    // --- UPDATE SQL ---
 //    private String buildUpdate() {
@@ -369,7 +369,7 @@ public class QBakery {
     public List<Map<String,Object>> listData() {
         List<Map<String,Object>> result = new ArrayList<>();
 
-        String sql = buildSQL();
+        String sql = buildSelect();
         System.out.println("Executing SQL:\n" + sql); // debug
 
         try (Connection conn = DB.getConnection();

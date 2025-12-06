@@ -102,12 +102,3 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
 	return publicFunctions;
 }();
 //# sourceURL=BakeryAdminRecipe
-
-// document.addEventListener("DOMContentLoaded", () => {
-//     const user = requireLogin({ adminOnly:true });
-//     if (!user) return;
-//     highlightNav('rec');
-//     initNavbarUser(user);
-  
-    
-//   });
