@@ -4,8 +4,8 @@ var M = {
     SHARE: 'share',
     storageKey: 'bakery',
     roleTypeMap: {
-        '0': M.USER,
-        '1': M.ADMIN
+        '0': 'user',
+        '1': 'admin'
     },
 
     $portal: $('.divPortal'),
