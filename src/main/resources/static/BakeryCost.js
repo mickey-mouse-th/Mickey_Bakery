@@ -108,4 +108,4 @@ window.bakery.BakeryCost.prototype = function() {
     };
     return publicFunctions;
 }();
-//# sourceURL=Cost
+//# sourceURL=BakeryCost
