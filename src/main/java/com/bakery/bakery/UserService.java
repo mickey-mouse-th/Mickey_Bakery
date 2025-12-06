@@ -120,13 +120,19 @@ public class UserService implements ApiHandler {
         }
         
         Long accId = (Long) list0.get("accId");
-
+        String deviceId = params.get("deviceId");
+        String deviceName = params.get("deviceName");
+        String deviceOS = params.get("deviceOS");
+        
         String accessToken = jwt.generateAccess(accId);
         String refreshToken = jwt.generateRefresh(accId);
 
         Map<String, Object> info = new HashMap<String, Object>();
         info.put("token", refreshToken);
         info.put("accId", accId);
+        info.put("deviceId", deviceId);
+        info.put("deviceName", deviceName);
+        info.put("deviceOS", deviceOS);
         info.put("expTs", LocalDateTime.now().plusDays(7));
         
         SqlUtils sql = new SqlUtils();
