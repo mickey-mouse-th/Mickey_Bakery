@@ -40,7 +40,7 @@ var M = {
             return null;
         }
 
-        var role = roleTypeMap[user.roleType] || M.USER;
+        var role = M.roleTypeMap[user.roleType] || M.USER;
         if (opts && opts.adminOnly && role != M.ADMIN) {
             M.main = 'user-recipe';
             M.mode = '';
