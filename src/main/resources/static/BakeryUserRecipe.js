@@ -34,7 +34,7 @@ window.bakery.BakeryUserRecipe.prototype = function() {
                 <div class="text-[11px] text-slate-400">
                     วัตถุดิบ: ${r.ingredientUsages?.length || 0} รายการ • ขั้นตอน: ${r.steps?.length || 0} ข้อ
                 </div>
-                <a href="BakeryUserRecipeForm.html?id=${r.id}" class="mt-1 inline-flex items-center justify-center rounded-xl bg-sky-500/90 hover:bg-sky-500 px-3 py-1.5 text-xs font-medium text-white">
+                <a href="#/admin/form:recipe?id=${r.id}" class="mt-1 inline-flex items-center justify-center rounded-xl bg-sky-500/90 hover:bg-sky-500 px-3 py-1.5 text-xs font-medium text-white">
                     ดูรายละเอียด
                 </a>
             `;

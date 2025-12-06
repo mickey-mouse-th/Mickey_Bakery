@@ -43,7 +43,7 @@ window.bakery.BakeryIngredient.prototype = function() {
                 <td class="px-3 py-2">${i.amount}</td>
                 <td class="px-3 py-2">${i.note || ''}</td>
                 <td class="px-3 py-2 text-right space-x-1">
-                    <a href="BakeryIngredientForm.html?id=${i.id}" class="text-xs text-sky-300 hover:underline">แก้ไข</a>
+                    <a href="#/admin/form:ingredient?id=${i.id}" class="text-xs text-sky-300 hover:underline">แก้ไข</a>
                     <button data-id="${i.id}" class="btn-del text-xs text-rose-400 hover:underline">ลบ</button>
                 </td>
             `;

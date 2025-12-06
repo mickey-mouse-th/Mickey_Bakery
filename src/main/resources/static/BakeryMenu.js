@@ -5,21 +5,27 @@ M.initMENU = function() {
     var admin_page = {};
     admin_page['admin-recipe'] = 'BakeryAdminRecipe';
     admin_page['manage-role'] = 'BakeryManageRole';
-
+    admin_page['ingredient'] = 'BakeryIngredient';
+    admin_page['cost'] = 'BakeryCost';
+    admin_page['dashboard'] = 'BakeryDashboard';
+    
     var admin_form = {};
-    admin_form['admin-recipe'] = 'BakeryAdminRecipeForm';
-    admin_form['manage-role'] = 'BakeryManageRoleForm';
+    admin_form['form:admin-recipe'] = 'BakeryAdminRecipeForm';
+    admin_form['form:manage-role'] = 'BakeryManageRoleForm';
+    admin_form['form:ingredient'] = 'BakeryIngredientForm';
+    admin_form['form:cost'] = 'BakeryCostForm';
+    admin_form['form:dashboard'] = 'BakeryDashboardForm';
 
     var user_page = {};
-    user_page['user-recipe'] = 'BakeryUserRecipe';
     
     var user_form = {};
-    user_form['user-recipe'] = 'BakeryUserRecipeForm';
 
     var share_page = {};
     share_page['login'] = 'BakeryUser';
+    share_page['user-recipe'] = 'BakeryUserRecipe';
 
     var share_form = {};
+    share_form['form:user-recipe'] = 'BakeryUserRecipeForm';
 
     M.MENU.admin = {
         page: admin_page,

@@ -70,7 +70,6 @@ window.bakery.BakeryUser.prototype = function() {
 			users.push(nu);
 			setUsers(users);
 			setSession(nu);
-			location.href = 'BakeryUserRecipe.html';
 		});
 	};
 

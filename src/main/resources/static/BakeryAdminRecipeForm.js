@@ -164,7 +164,7 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
       if (id) list = list.map(r => r.id === id ? data : r);
       else list.push(data);
       setRecipes(list);
-      window.location.href = 'BakeryAdminRecipe.html';
+      window.location.href = '#/admin/admin-recipe';
     });
 	  }
 

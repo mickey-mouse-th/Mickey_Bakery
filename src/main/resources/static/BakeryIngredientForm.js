@@ -70,7 +70,6 @@ window.bakery.BakeryIngredientForm.prototype = function() {
             list.push({ id: 'ing_' + Date.now(), name, unit, amount, quantity: qty, note });
         }
         setIngredients(list);
-        window.location.href = 'BakeryIngredient.html';
     };
 
     var log = function(data) {

@@ -37,7 +37,7 @@ var M = {
         }
         if (opts && opts.adminOnly && session.role !== M.ADMIN) {
             M.main = 'user-recipe';
-            M.mode = M.USER;
+            M.mode = '';
             return null;
         }
         var hash = window.location.hash || '';
