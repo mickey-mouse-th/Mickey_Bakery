@@ -101,13 +101,19 @@ var M = {
     loadPage: function(page) {
         var $divMainPage = M.$portal.find('.divMainPage');
         $divMainPage.children('[data-page]').hide();
+    
         var $exist = $divMainPage.children('[data-page="' + page + '"]');
     
         M.showLoader();
         if ($exist.length > 0) {
-            $exist.show();
             var ctx0 = $exist.data('ctx');
-            if (ctx0.load) ctx0.load();
+            if (!ctx0 && window.bakery[page] && typeof window.bakery[page] === 'function') {
+                ctx0 = new window.bakery[page]();
+                $exist.data('ctx', ctx0);
+            }
+    
+            if (ctx0 && ctx0.load) ctx0.load();
+            $exist.show();
             M.hideLoader();
             return;
         }
@@ -117,7 +123,7 @@ var M = {
                 if (window.bakery[page] && typeof window.bakery[page] === 'function') {
                     var ctx = new window.bakery[page]();
                     $item.data('ctx', ctx);
-
+    
                     if (ctx.init) ctx.init($item);
                     if (ctx.load) ctx.load();
                 }
