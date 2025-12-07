@@ -230,7 +230,7 @@ var M = {
     },
     clearStorage: function() {
         for(var key in localStorage) {
-            if (key.startsWith(M.storageKey)) {
+            if (key.startsWith(M.storageKey) && key != (M.storageKey + "_deviceId")) {
                 localStorage.removeItem(key);
             }
         }
@@ -274,6 +274,13 @@ var M = {
                 $notif.remove();
             }, 300);
         }, 3000);
+    },
+
+    showLoader: function() {
+        M.$portal.find("#M-loading").removeClass("hidden");
+    },
+    hideLoader: function() {
+        M.$portal.find("#M-loading").addClass("hidden");
     },
 
     about: function() {

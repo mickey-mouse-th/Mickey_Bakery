@@ -18,42 +18,111 @@ window.bakery.BakeryUser.prototype = function() {
 	};
 
 	var initPageControl = function() {
-		var $username = self.$scope.find('[data-fld="username"]');
-		var $password = self.$scope.find('[data-fld="password"]');
-		var $err = self.$scope.find('#auth-error');
+		var $divLogin = self.$scope.find('.divLogin');
+		var $username = $divLogin.find('[data-fld="username"]');
+		var $password = $divLogin.find('[data-fld="password"]');
+		var $err = $divLogin.find('#auth-error');
+		var $divRegisterModal = self.$scope.find('.divRegisterModal');
 		
-		self.$scope.on('click', '.btnLogin', function() {
+		$divLogin.on('click', '.btnLogin', function () {
 			var deviceId = M.getItemStorage('deviceId');
 			if (!deviceId) {
 				deviceId = crypto.randomUUID();
 				M.setItemStorage('deviceId', deviceId);
-				M.deviceId = deviceId;
 			}
+		
 			var req = {
 				username: ($username.val() || '').trim(),
 				password: ($password.val() || '').trim(),
 				deviceOS: navigator.userAgent || 'Unknown',
 				deviceName: navigator.platform || 'Unknown',
 				deviceId: deviceId
-			}
-			M.callServer("POST", "bakery-api/user/login", req)
-				.then(o => {
-					if (o.status != 'OK') {
+			};
+		
+			var host = (M.isDEV === '1') ? 'http://localhost:8080' : '';
+			var url = host + '/bakery-api/user/login';
+		
+			M.showLoader();
+			$.ajax({
+				method: "POST",
+				url: url,
+				data: JSON.stringify(req),
+				contentType: 'application/json',
+				timeout: 5000,
+				success: function (ret) {
+					M.hideLoader();
+					if (ret.status !== 'OK') {
 						M.showNotification('something went wrong', 'fail');
 						return;
 					}
-					M.setItemStorage('user', o.user);
+		
+					M.setItemStorage('user', ret.user);
 					M.goPageLink();
-				})
-				.catch(o => {
-					var responseJSON = o.xhr.responseJSON;
-					var reason = responseJSON.reason;
+				},
+				error: function (xhr, status, error) {
+					M.hideLoader();
+					var responseJSON = xhr.responseJSON || {};
+					var reason = responseJSON.reason || "Login failed";
 					M.showNotification(reason, 'fail');
-				})
+				}
+			});
 		});
 		
-		self.$scope.on('click', '#btn-register', function() {
-			// TODO
+		$divLogin.on('click', '.btnRegister', function () {
+			$divRegisterModal.find('[data-fld="name"]').val('');
+			$divRegisterModal.find('[data-fld="username"]').val('');
+			$divRegisterModal.find('[data-fld="password"]').val('');
+			$divRegisterModal.removeClass('hidden').addClass('flex');
+		});
+		$divRegisterModal.on('click', '.btnCloseModal', function () {
+			$divRegisterModal.addClass('hidden').removeClass('flex');
+		});
+		$divRegisterModal.on('click', '.btnRegisterSubmit', function () {
+		
+			var req = {
+				name: ($divRegisterModal.find('[data-fld="name"]').val() || '').trim(),
+				username: ($divRegisterModal.find('[data-fld="username"]').val() || '').trim(),
+				password: ($divRegisterModal.find('[data-fld="password"]').val() || '').trim()
+			};
+		
+			if (!req.name || !req.username || !req.password) {
+				M.showNotification('กรุณากรอกข้อมูลให้ครบ', 'fail');
+				return;
+			}
+		
+			var host = (M.isDEV === '1') ? 'http://localhost:8080' : '';
+			var url = host + '/bakery-api/user/register';
+			
+			M.showLoader();
+			$.ajax({
+				method: "POST",
+				url: url,
+				data: JSON.stringify(req),
+				contentType: 'application/json',
+				timeout: 5000,
+				success: function (ret) {
+					M.hideLoader();
+					if (ret.status !== 'OK') {
+						if (ret.reason === 'USERNAME_EXISTS') {
+							M.showNotification('ชื่อผู้ใช้นี้มีอยู่แล้ว', 'fail');
+							return;
+						}
+
+						M.showNotification(ret.reason || 'สมัครสมาชิกไม่สำเร็จ', 'fail');
+						return;
+					}
+		
+					$divRegisterModal.addClass('hidden').removeClass('flex');
+					M.showNotification('สมัครสมาชิกสำเร็จ', 'done');
+					M.goPageLink();
+				},
+				error: function (xhr) {
+					M.hideLoader();
+					var responseJSON = xhr.responseJSON || {};
+					var reason = responseJSON.reason || 'Register failed';
+					M.showNotification(reason, 'fail');
+				}
+			});
 		});
 	};
 
