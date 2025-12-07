@@ -38,7 +38,6 @@ window.bakery.BakeryManageRole.prototype = function() {
     };
 
     var doLoad = function() {
-        log('load at ' + new Date().toISOString());
         self.$tbody.empty();
 
         var list = []; // TODO load user

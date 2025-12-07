@@ -26,7 +26,7 @@ window.bakery.BakeryUser.prototype = function() {
 		// Clear Filter
 		self.$scope.find(':input.txtSearch').val("");
 
-		doLoad();
+		// doLoad();
 		onLoadDone();
 	};
 
