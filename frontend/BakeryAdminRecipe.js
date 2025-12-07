@@ -80,7 +80,7 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
     };
 
     var about = function() {
-        log();
+        log('about call');
     };
 
     var publicFunctions = {
@@ -90,4 +90,4 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
 	};
 	return publicFunctions;
 }();
-//# sourceURL=BakeryAdminRecipe
+//# sourceURL=BakeryAdminRecipe.js

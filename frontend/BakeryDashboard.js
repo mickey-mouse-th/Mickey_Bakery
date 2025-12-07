@@ -34,7 +34,7 @@ window.bakery.BakeryDashboard.prototype = function() {
 		self.$scope.find(':input.txtSearch').val("");
 
 		// doLoad();
-		// onLoadDone();
+		onLoadDone();
 	};
 
     var renderTable = function() {
@@ -96,17 +96,25 @@ window.bakery.BakeryDashboard.prototype = function() {
         });
     };
 
+    var onLoadDone = function() {
+		if (self.cbLoadDone) {
+			self.cbLoadDone.call(null);
+		}
+	};
+
     var log = function(data) {
         console.log(self.logPrefix, data);
     };
 
-    return {
+    var about = function() {
+        log('about call');
+    };
+
+    var publicFunctions = {
         init: init,
         load: load, 
-        
-        renderTable: renderTable,
-        renderChart: renderChart,
-        log: log
+        about: about,
     };
+    return publicFunctions;
 }();
-//# sourceURL=BakeryDashboard
+//# sourceURL=BakeryDashboard.js

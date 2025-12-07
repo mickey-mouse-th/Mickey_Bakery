@@ -26,7 +26,7 @@ window.bakery.BakeryManageRole.prototype = function() {
 		self.$scope.find(':input.txtSearch').val("");
 
 		doLoad();
-		// onLoadDone();
+		onLoadDone();
 	};
 
     var initPageControl = function() {
@@ -66,18 +66,25 @@ window.bakery.BakeryManageRole.prototype = function() {
         });
     };
 
+    var onLoadDone = function() {
+		if (self.cbLoadDone) {
+			self.cbLoadDone.call(null);
+		}
+	};
+
     var log = function(data) {
         console.log(self.logPrefix, data);
     };
 
     var about = function() {
-        log();
+        log('about call');
     };
 
-    return {
+    var publicFunctions = {
         init: init,
         load: load,
         about: about
     };
+    return publicFunctions;
 }();
-//# sourceURL=BakeryManageRole
+//# sourceURL=BakeryManageRole.js

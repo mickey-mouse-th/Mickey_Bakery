@@ -27,7 +27,7 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
 		self.$scope.find(':input.txtSearch').val("");
 
 		// doLoad();
-		// onLoadDone();
+		onLoadDone();
 	};
 
 	var initPageControl = function() {
@@ -180,21 +180,27 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
       setRecipes(list);
       window.location.href = '#/admin/admin-recipe';
     });
-	  }
+	  };
+
+    var onLoadDone = function() {
+      if (self.cbLoadDone) {
+        self.cbLoadDone.call(null);
+      }
+    };
 
     var log = function (data) {
         console.log(self.logPrefix, data);
     };
 
     var about = function() {
-        log();
+      log('about call');
     };
 
     var publicFunctions = {
-		init: init,
-    load: load,
-		about: about
-	};
-	return publicFunctions;
+      init: init,
+      load: load,
+      about: about
+    };
+	  return publicFunctions;
 }();
-//# sourceURL=BakeryAdminRecipe
+//# sourceURL=BakeryAdminRecipe.js

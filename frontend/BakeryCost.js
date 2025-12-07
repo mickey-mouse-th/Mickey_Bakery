@@ -26,7 +26,7 @@ window.bakery.BakeryCost.prototype = function() {
 		self.$scope.find(':input.txtSearch').val("");
 
 		// doLoad();
-		// onLoadDone();
+		onLoadDone();
 	};
 
     var initPageControl = function() {
@@ -107,20 +107,25 @@ window.bakery.BakeryCost.prototype = function() {
         });
     };
 
+    var onLoadDone = function() {
+		if (self.cbLoadDone) {
+			self.cbLoadDone.call(null);
+		}
+	};
+
     var log = function(data) {
         console.log(self.logPrefix, data);
     };
 
     var about = function() {
-        log('About called');
+        log('about call');
     };
 
     var publicFunctions = {
         init: init,
         load: load,
-        
         about: about
     };
     return publicFunctions;
 }();
-//# sourceURL=BakeryCost
+//# sourceURL=BakeryCost.js

@@ -47,13 +47,14 @@ window.bakery.BakeryUserRecipe.prototype = function() {
     };
 
     var about = function() {
-        log();
+        log('about call');
     };
 
-    return {
+    var publicFunctions = {
         init: init,
         load: load,
         about: about
     };
+    return publicFunctions;
 }();
 //# sourceURL=BakeryUserRecipe.js

@@ -33,7 +33,7 @@ window.bakery.BakeryUserRecipeForm.prototype = function() {
 		self.$scope.find(':input.txtSearch').val("");
 
 		// doLoad();
-		// onLoadDone();
+		onLoadDone();
 	};
 
     var loadRecipe = function() {
@@ -81,13 +81,24 @@ window.bakery.BakeryUserRecipeForm.prototype = function() {
         self.errorBox.textContent = msg || '';
     };
 
+    var onLoadDone = function() {
+		if (self.cbLoadDone) {
+			self.cbLoadDone.call(null);
+		}
+	};
+
     var log = function(data) {
         console.log(self.logPrefix, data);
     };
 
+    var about = function() {
+        log('about call');
+    };
+
     var publicFunctions = {
         init: init,
-        load: load
+        load: load,
+        about: about
     };
     return publicFunctions;
 }();

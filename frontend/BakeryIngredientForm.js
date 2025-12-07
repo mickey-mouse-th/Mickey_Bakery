@@ -25,7 +25,7 @@ window.bakery.BakeryIngredientForm.prototype = function() {
 		self.$scope.find(':input.txtSearch').val("");
 
 		doLoad();
-		// onLoadDone();
+		onLoadDone();
 	};
 
     var initPageControl = function() {
@@ -85,12 +85,18 @@ window.bakery.BakeryIngredientForm.prototype = function() {
         setIngredients(list);
     };
 
+    var onLoadDone = function() {
+		if (self.cbLoadDone) {
+			self.cbLoadDone.call(null);
+		}
+	};
+
     var log = function(data) {
         console.log(self.logPrefix, data);
     };
 
     var about = function() {
-        log();
+        log('about call');
     };
 
     var publicFunctions = {
@@ -100,4 +106,4 @@ window.bakery.BakeryIngredientForm.prototype = function() {
     };
     return publicFunctions;
 }();
-//# sourceURL=BakeryIngredientForm
+//# sourceURL=BakeryIngredientForm.js

@@ -26,8 +26,8 @@ window.bakery.BakeryUser.prototype = function() {
 		// Clear Filter
 		self.$scope.find(':input.txtSearch').val("");
 
-		// doLoad();
-		// onLoadDone();
+		doLoad();
+		onLoadDone();
 	};
 
 	var initPageControl = function() {
@@ -140,12 +140,24 @@ window.bakery.BakeryUser.prototype = function() {
 		});
 	};
 
+	var onLoadDone = function() {
+		if (self.cbLoadDone) {
+			self.cbLoadDone.call(null);
+		}
+	};
+
+	var onLoadDone = function() {
+		if (self.cbLoadDone) {
+			self.cbLoadDone.call(null);
+		}
+	};
+
     var log = function (data) {
         console.log(self.logPrefix, data);
     };
 
     var about = function() {
-        log();
+        log('about call');
     };
 
     var publicFunctions = {
@@ -155,4 +167,4 @@ window.bakery.BakeryUser.prototype = function() {
 	};
 	return publicFunctions;
 }();
-//# sourceURL=BakeryUser
+//# sourceURL=BakeryUser.js
