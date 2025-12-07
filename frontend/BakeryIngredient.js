@@ -24,6 +24,19 @@ window.bakery.BakeryIngredient.prototype = function() {
         if (self.cb) self.cb();
     };
 
+    var load = function(info, cbLoadDone, cbPageBack) {
+		log('load at ' + new Date().toISOString(), info);
+		self.info = info;
+		self.cbLoadDone = cbLoadDone;
+		self.cbPageBack = cbPageBack;
+
+		// Clear Filter
+		self.$scope.find(':input.txtSearch').val("");
+
+		// doLoad();
+		// onLoadDone();
+	};
+
     var renderTable = function() {
         const list = []; // TODO
         if (!list.length) {
@@ -71,6 +84,8 @@ window.bakery.BakeryIngredient.prototype = function() {
 
     return {
         init: init,
+        load: load, 
+        
         renderTable: renderTable,
         log: log
     };

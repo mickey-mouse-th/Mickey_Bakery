@@ -17,6 +17,19 @@ window.bakery.BakeryUser.prototype = function() {
 		log('init DONE', this);
 	};
 
+	var load = function(info, cbLoadDone, cbPageBack) {
+		log('load at ' + new Date().toISOString(), info);
+		self.info = info;
+		self.cbLoadDone = cbLoadDone;
+		self.cbPageBack = cbPageBack;
+
+		// Clear Filter
+		self.$scope.find(':input.txtSearch').val("");
+
+		// doLoad();
+		// onLoadDone();
+	};
+
 	var initPageControl = function() {
 		var $username = self.$scope.find('[data-fld="username"]');
 		var $password = self.$scope.find('[data-fld="password"]');
@@ -135,6 +148,7 @@ window.bakery.BakeryUser.prototype = function() {
 
     var publicFunctions = {
 		init: init,
+		load: load, 
 		about: about
 	};
 	return publicFunctions;

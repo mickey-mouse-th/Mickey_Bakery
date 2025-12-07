@@ -29,6 +29,19 @@ window.bakery.BakeryDashboard.prototype = function() {
         if (self.cb) self.cb();
     };
 
+    var load = function(info, cbLoadDone, cbPageBack) {
+		log('load at ' + new Date().toISOString(), info);
+		self.info = info;
+		self.cbLoadDone = cbLoadDone;
+		self.cbPageBack = cbPageBack;
+
+		// Clear Filter
+		self.$scope.find(':input.txtSearch').val("");
+
+		// doLoad();
+		// onLoadDone();
+	};
+
     var renderTable = function() {
         if (!self.costs.length) {
             self.empty.classList.remove('hidden');
@@ -94,6 +107,8 @@ window.bakery.BakeryDashboard.prototype = function() {
 
     return {
         init: init,
+        load: load, 
+        
         renderTable: renderTable,
         renderChart: renderChart,
         log: log

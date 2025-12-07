@@ -23,6 +23,19 @@ window.bakery.BakeryUserRecipeForm.prototype = function() {
         log('init DONE', self);
     };
 
+    var load = function(info, cbLoadDone, cbPageBack) {
+		log('load at ' + new Date().toISOString(), info);
+		self.info = info;
+		self.cbLoadDone = cbLoadDone;
+		self.cbPageBack = cbPageBack;
+
+		// Clear Filter
+		self.$scope.find(':input.txtSearch').val("");
+
+		// doLoad();
+		// onLoadDone();
+	};
+
     var loadRecipe = function() {
         const recipes = []; // TODO
         const ingredients = []; // TODO
@@ -73,7 +86,8 @@ window.bakery.BakeryUserRecipeForm.prototype = function() {
     };
 
     var publicFunctions = {
-        init: init
+        init: init,
+        load: load
     };
     return publicFunctions;
 }();

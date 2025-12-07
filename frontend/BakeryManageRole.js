@@ -16,6 +16,19 @@ window.bakery.BakeryManageRole.prototype = function() {
         log('init DONE', this);
     };
 
+    var load = function(info, cbLoadDone, cbPageBack) {
+		log('load at ' + new Date().toISOString(), info);
+		self.info = info;
+		self.cbLoadDone = cbLoadDone;
+		self.cbPageBack = cbPageBack;
+
+		// Clear Filter
+		self.$scope.find(':input.txtSearch').val("");
+
+		doLoad();
+		// onLoadDone();
+	};
+
     var initPageControl = function() {
         self.$tbody = self.$scope.find('#role-tbody');
 
@@ -24,7 +37,7 @@ window.bakery.BakeryManageRole.prototype = function() {
         });
     };
 
-    var load = function() {
+    var doLoad = function() {
         log('load at ' + new Date().toISOString());
         self.$tbody.empty();
 
