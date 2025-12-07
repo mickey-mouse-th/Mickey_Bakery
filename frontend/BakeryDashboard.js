@@ -10,12 +10,6 @@ window.bakery.BakeryDashboard.prototype = function() {
         self.$scope = $scope || $('#none');
         self.cb = cb;
 
-        const user = requireLogin({ adminOnly:true });
-        if (!user) return;
-
-        highlightNav('dash');
-        initNavbarUser(user);
-
         self.recipes = []; // TODO
         self.costs = []; // TODO
         self.empty = document.getElementById('dash-empty');
