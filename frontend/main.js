@@ -107,9 +107,8 @@ var M = {
         M.showLoader();
         if ($exist.length > 0) {
             var ctx0 = $exist.data('ctx');
-            if (ctx0.load) ctx0.load();
+            if (ctx0.load) ctx0.load({}, M.hideLoader);
             $exist.show();
-            M.hideLoader();
             return;
         }
     
@@ -120,10 +119,9 @@ var M = {
                     $item.data('ctx', ctx);
     
                     if (ctx.init) ctx.init($item);
-                    if (ctx.load) ctx.load();
+                    if (ctx.load) ctx.load({}, M.hideLoader);
                 }
             });
-            M.hideLoader();
         });
     },
     
