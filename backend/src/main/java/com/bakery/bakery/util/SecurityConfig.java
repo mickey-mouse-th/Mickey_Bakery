@@ -20,36 +20,33 @@ public class SecurityConfig {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
-            );
+            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         return http.build();
     }
 
-    // CORS CONFIG
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        
+
         config.setAllowedOrigins(List.of(
-            "https://bakery-y8yz.onrender.com",   // front บน Render
-            "http://localhost:5500",              // front เวลาทดสอบ
-            "http://localhost:3000",
-            "http://127.0.0.1:5500"
+            "https://bakery-frontend-z0xl.onrender.com",
+            "https://bakery-y8yz.onrender.com",
+            "http://localhost:8080",
+            "http://localhost:5500"
         ));
-        
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        config.setAllowedMethods(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
-    
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

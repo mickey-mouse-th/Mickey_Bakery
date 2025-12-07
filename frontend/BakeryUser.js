@@ -98,7 +98,7 @@ window.bakery.BakeryUser.prototype = function() {
 				url: url,
 				data: JSON.stringify(req),
 				contentType: 'application/json',
-				timeout: 5000,
+				timeout: 30*1000, // 30 sec
 				success: function (ret) {
 					M.hideLoader();
 					if (ret.status !== 'OK') {
