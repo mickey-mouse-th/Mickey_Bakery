@@ -82,10 +82,11 @@ window.bakery.BakeryUserRecipeForm.prototype = function() {
     };
 
     var onLoadDone = function() {
-		if (self.cbLoadDone) {
-			self.cbLoadDone.call(null);
-		}
-	};
+        log('onLoadDone ...');
+        if (self.cbLoadDone) {
+          self.cbLoadDone.call(null);
+        }
+    };
 
     var log = function(data) {
         console.log(self.logPrefix, data);

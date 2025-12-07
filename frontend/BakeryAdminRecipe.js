@@ -73,7 +73,10 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
 
     var onLoadDone = function() {
         log('onLoadDone ...');
-    };
+        if (self.cbLoadDone) {
+          self.cbLoadDone.call(null);
+        }
+      };
 
     var log = function (data) {
         console.log(self.logPrefix, data);
