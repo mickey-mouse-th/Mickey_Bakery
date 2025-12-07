@@ -25,7 +25,7 @@ window.bakery.BakeryCost.prototype = function() {
         function showError(msg) { errorBox.text(msg || ''); }
 
         // ดึงเมนูและ populate select
-        var recipes = getRecipes();
+        var recipes = []; // TODO
         select.html('<option value="">เลือกเมนู</option>');
         recipes.forEach(r => {
             var opt = $('<option></option>').val(r.id).text(r.name);
@@ -34,7 +34,7 @@ window.bakery.BakeryCost.prototype = function() {
 
         function renderTable() {
             tbody.html('');
-            var list = getCosts();
+            var list = []; // TODO
             if (!list.length) {
                 empty.removeClass('hidden');
                 return;
@@ -77,7 +77,7 @@ window.bakery.BakeryCost.prototype = function() {
             var profitPerPiece = price - costPerPiece;
             var totalProfit = profitPerPiece * qty;
 
-            var list = getCosts();
+            var list = []; // TODO
             list.push({
                 id: 'cost_' + Date.now(),
                 recipeId,

@@ -18,7 +18,7 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
 	};
 
 	var initPageControl = function() {
-    const ingredients = getIngredients();
+    const ingredients = [];
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
   
@@ -139,13 +139,14 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
   
     // Load edit
     if (id) {
-      const rec = getRecipes().find(r => r.id === id);
-      if (rec) {
-        titleEl.textContent = 'แก้ไขเมนู';
-        nameInput.value = rec.name;
-        (rec.ingredientUsages || []).forEach(u => addIngredientRow(u));
-        (rec.steps || []).forEach(s => addStepRow(s));
-      }
+      // TODO
+      // const rec = ().find(r => r.id === id);
+      // if (rec) {
+      //   titleEl.textContent = 'แก้ไขเมนู';
+      //   nameInput.value = rec.name;
+      //   (rec.ingredientUsages || []).forEach(u => addIngredientRow(u));
+      //   (rec.steps || []).forEach(s => addStepRow(s));
+      // }
     }
   
     document.getElementById('recipe-form').addEventListener('submit', e => {
@@ -159,7 +160,7 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
       const steps = [...stepContainer.children].map(r => r.getValue()).filter(x => x);
       if (!steps.length) return showError('กรุณาเพิ่มขั้นตอนอย่างน้อย 1 ข้อ');
   
-      let list = getRecipes();
+      let list = []; // TODO
       const data = { id: id || 'rec_' + Date.now(), name, ingredientUsages, steps };
       if (id) list = list.map(r => r.id === id ? data : r);
       else list.push(data);

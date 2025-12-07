@@ -21,7 +21,7 @@ window.bakery.BakeryUserRecipe.prototype = function() {
     };
 
     var load = function() {
-        const list = getRecipes();
+        const list = []; // TODO
         if (!list.length) {
             self.$empty.classList.remove('hidden');
             return;

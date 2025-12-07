@@ -36,7 +36,8 @@ window.bakery.BakeryIngredientForm.prototype = function() {
         self.id = params.get('id');
 
         if (self.id) {
-            const ing = getIngredients().find(i => i.id === self.id);
+            // TODO
+            const ing = [].find(i => i.id === self.id);
             if (ing) {
                 self.$titleEl.text('แก้ไขวัตถุดิบ');
                 self.$nameInput.val(ing.name);
@@ -63,7 +64,7 @@ window.bakery.BakeryIngredientForm.prototype = function() {
         if (!qty || qty <= 0) return showError('ปริมาณทั้งหมดต้องมากกว่า 0');
         if (!amount || amount <= 0) return showError('ราคา/หน่วยต้องมากกว่า 0');
 
-        let list = getIngredients();
+        let list = []; // TODO
         if (self.id) {
             list = list.map(i => i.id === self.id ? { id: self.id, name, unit, amount, quantity: qty, note } : i);
         } else {

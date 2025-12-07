@@ -25,7 +25,7 @@ window.bakery.BakeryIngredient.prototype = function() {
     };
 
     var renderTable = function() {
-        const list = getIngredients();
+        const list = []; // TODO
         if (!list.length) {
             self.empty.classList.remove('hidden');
             return;
@@ -58,7 +58,8 @@ window.bakery.BakeryIngredient.prototype = function() {
             const id = e.target.getAttribute('data-id');
             if (!confirm('ลบวัตถุดิบนี้?')) return;
 
-            const list = getIngredients().filter(x => x.id !== id);
+            // TODO
+            const list = [].filter(x => x.id !== id);
             setIngredients(list);
             location.reload();
         }

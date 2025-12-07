@@ -24,8 +24,8 @@ window.bakery.BakeryUserRecipeForm.prototype = function() {
     };
 
     var loadRecipe = function() {
-        const recipes = getRecipes();
-        const ingredients = getIngredients();
+        const recipes = []; // TODO
+        const ingredients = []; // TODO
 
         if (!self.id) {
             showError('ไม่พบเมนูนี้ในระบบ');

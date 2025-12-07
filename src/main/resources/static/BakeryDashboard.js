@@ -16,8 +16,8 @@ window.bakery.BakeryDashboard.prototype = function() {
         highlightNav('dash');
         initNavbarUser(user);
 
-        self.recipes = getRecipes();
-        self.costs = getCosts();
+        self.recipes = []; // TODO
+        self.costs = []; // TODO
         self.empty = document.getElementById('dash-empty');
         self.content = document.getElementById('dash-content');
         self.tbody = document.getElementById('dash-tbody');
