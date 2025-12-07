@@ -53,23 +53,7 @@ window.bakery.BakeryUser.prototype = function() {
 		});
 		
 		self.$scope.on('click', '#btn-register', function() {
-			var u = ($username.val() || '').trim();
-			var p = ($password.val() || '').trim();
-			if (!u || !p) {
-			$err.text('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน');
-			return;
-			}
-			var users = getUsers();
-		
-			if (users.find(x => x.username === u)) {
-			$err.text('มีชื่อผู้ใช้นี้แล้วในระบบ');
-			return;
-			}
-		
-			var nu = { id: 'u_' + Date.now(), username: u, password: p, role: M.USER, createdAt: Date.now() };
-			users.push(nu);
-			setUsers(users);
-			setSession(nu);
+			// TODO
 		});
 	};
 

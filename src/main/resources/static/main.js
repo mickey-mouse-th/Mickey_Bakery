@@ -27,7 +27,7 @@ var M = {
             }
         }
         M.$portal.on('click', '#btn-logout', function() {
-            clearSession();
+            M.clearStorage();
             window.location.href = '';
         });
     },
@@ -89,8 +89,10 @@ var M = {
 
                 $.getScript(page + '.js', function () {
                     console.log("โหลด JS สำเร็จ และรันแล้ว");
-                    var script = new window.bakery[page]();
-                    script.init($item);
+                    if(window.bakery[page] && typeof window.bakery[page] === 'function') {
+                        var script = new window.bakery[page]();
+                        if(script.init) script.init($item);
+                    }
                 });
             },
             error: function () {
@@ -216,7 +218,6 @@ var M = {
         var json = JSON.stringify(data);
         localStorage.setItem(M.storageKey + '_' + key, json);
     },
-
     getItemStorage: function(key) {
         var json = localStorage.getItem(M.storageKey + '_' + key);
         if (!json) return null;
@@ -227,98 +228,55 @@ var M = {
             return null;
         }
     },
+    clearStorage: function() {
+        for(var key in localStorage) {
+            if (key.startsWith(M.storageKey)) {
+                localStorage.removeItem(key);
+            }
+        }
+    },
 
     showNotification: function(msg, status) {
         status = status || 'done';
+
         var $container = M.$portal.find("#notification-container");
-    
-        var $notif = $("<div></div>")
-        $notif.addClass('flex items-center p-3 rounded-lg shadow-lg text-white min-w-[250px] transition-transform transform translate-x-20 opacity-0');
-    
+
+        var $notif = $('<div class="flex items-center p-4 rounded-lg shadow-lg text-white min-w-[300px] gap-3 transform translate-x-20 opacity-0 transition-all duration-300"></div>');
+
         var iconSvg = "";
         if (status === "done") {
             $notif.addClass("bg-green-500");
-            iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 mr-2 flex-shrink-0">
+            iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 flex-shrink-0">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
             </svg>`;
         } else if (status === "fail") {
             $notif.addClass("bg-red-500");
-            iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 mr-2 flex-shrink-0">
+            iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 flex-shrink-0">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>`;
         } else {
             $notif.addClass("bg-gray-600");
-            iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 mr-2 flex-shrink-0">
+            iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6 flex-shrink-0">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 6a9 9 0 110 18 9 9 0 010-18z"/>
             </svg>`;
         }
-    
-        $notif.html(iconSvg + `<span>${msg}</span>`);
+
+        $notif.html(iconSvg + `<span class="flex-1">${msg}</span>`);
         $container.append($notif);
-    
-        // Animate in
-        requestAnimationFrame(() => {
-            $notif.removeClass("translate-x-20", "opacity-0");
-            $notif.addClass("translate-x-0", "opacity-100");
-        });
-    
-        // Auto remove
-        setTimeout(() => {
-            $notif.addClass("translate-x-20", "opacity-0");
-            setTimeout(() => $notif.remove(), 300);
+
+        setTimeout(function() {
+            $notif.removeClass("translate-x-20 opacity-0").addClass("translate-x-0 opacity-100");
+        }, 10);
+
+        setTimeout(function() {
+            $notif.removeClass("translate-x-0 opacity-100").addClass("translate-x-20 opacity-0");
+            setTimeout(function() {
+                $notif.remove();
+            }, 300);
         }, 3000);
     },
 
     about: function() {
         console.log('[MAIN]')
     }
-}
-
-var LS_USERS = 'sweetlab_users';
-var LS_SESSION = 'sweetlab_session';
-var LS_ING = 'sweetlab_ingredients';
-var LS_REC = 'sweetlab_recipes';
-var LS_COST = 'sweetlab_costs';
-
-function getUsers() {
-    var list = readJSON(LS_USERS, []);
-    if (!list.length) {
-      var admin = {
-        id: 'u_admin',
-        username: 'admin',
-        password: 'admin123',
-        role: 'admin',
-        createdAt: Date.now()
-      };
-      writeJSON(LS_USERS, [admin]);
-      return [admin];
-    }
-    return list;
-  }
-function setUsers(list) { writeJSON(LS_USERS, list); }
-
-function readJSON(key, def) {
-  try {
-    var v = localStorage.getItem(key);
-    if (!v) return def;
-    return JSON.parse(v);
-  } catch (e) {
-    return def;
-  }
-}
-
-function writeJSON(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
-}
-
-function setSession(user) {
-    writeJSON(LS_SESSION, { id: user.id, username: user.username, role: user.role });
-}
-  
-function getSession() {
-    return readJSON(LS_SESSION, null);
-}
-  
-function clearSession() {
-    localStorage.removeItem(LS_SESSION);
 }

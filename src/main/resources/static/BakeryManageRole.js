@@ -20,11 +20,7 @@ window.bakery.BakeryManageRole.prototype = function() {
         self.$tbody = self.$scope.find('#role-tbody');
 
         self.$tbody.on('change', '.role-select', function() {
-            var uid = $(this).attr('data-uid');
-            var role = $(this).val();
-            var list = getUsers().map(u => u.id === uid ? { ...u, role } : u);
-            setUsers(list);
-            log('Updated role for user: ' + uid + ' => ' + role);
+            // TODO
         });
     };
 
@@ -32,7 +28,7 @@ window.bakery.BakeryManageRole.prototype = function() {
         log('load at ' + new Date().toISOString());
         self.$tbody.empty();
 
-        var list = getUsers();
+        var list = []; // TODO load user
         if (!list.length) {
             log('No users found');
             return;

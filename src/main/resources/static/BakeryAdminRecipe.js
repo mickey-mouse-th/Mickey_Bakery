@@ -38,16 +38,13 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
 
         self.$scope.on('click', '.btnDelete', function() {
             if (!confirm('ลบเมนูนี้?')) return;
-            var list = getRecipes().filter(x => x.id !== id);
-            setRecipes(list);
-
             // TODO sent request to delete via server
             // TODO delete this item on screen
         });
 	};
 
     var doLoad = function() {
-        var list = getRecipes(); // TODO list via server
+        var list = []; // TODO list via server
         onLoad(list);
     };
 
@@ -72,14 +69,6 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
             $item.removeClass('hidden');
             $item.insertBefore($HL);
         }
-    };
-
-    // TODO remove
-    var getRecipes = function() { 
-        return readJSON(LS_REC, []); 
-    };
-    var setRecipes = function(list) { 
-        writeJSON(LS_REC, list); 
     };
 
     var onLoadDone = function() {
