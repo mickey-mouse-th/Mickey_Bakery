@@ -100,8 +100,8 @@ var M = {
                     if (ctx.init) ctx.init($item);
                     if (ctx.load) ctx.load();
                 }
-                M.hideLoader();
             });
+            M.hideLoader();
         });
     },
     
