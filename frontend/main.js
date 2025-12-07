@@ -21,8 +21,6 @@ var M = {
             M.goPageLink();
         }
 
-        M.$portal.find('.divHeader:not([data-mode="' + M.mode + '"]').remove();
-        M.$portal.find('.divHeader').removeClass('hidden');
         window.onhashchange = function(e) {
             if (!M.requireLogin()) {
                 M.goPageLink();
@@ -88,6 +86,12 @@ var M = {
 
 
     goPageLink: function() {
+        var user = M.getItemStorage('user');
+        if (!!user) {
+            M.$portal.find('.divHeader:not([data-mode="' + M.mode + '"]').remove();
+            M.$portal.find('.divHeader').removeClass('hidden');
+        }
+
         var menu = M.main || '';
         var map  = M.MENU[M.mode] || {};
         var page = map.page[menu] || map.form[menu] || map.default;
