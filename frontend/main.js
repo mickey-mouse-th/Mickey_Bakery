@@ -32,23 +32,24 @@ var M = {
         });
 
         // TODO Fix
-        const drawer = $("#mobileDrawer");
-        const backdrop = $("#mobileDrawer-backdrop");
+        var drawer = M.$portal.find("#mobileDrawer");
+        var backdrop = M.$portal.find("#mobileDrawer-backdrop");
       
         // เปิดเมนู
-        $("#btn-ham").on("click", function () {
+        M.$portal.find("#btn-ham").on("click", function () {
           drawer.removeClass("hidden").removeClass("translate-x-full");
           backdrop.removeClass("hidden");
         });
       
         // ปิดเมนู
-        $("#btn-close-drawer, #mobileDrawer-backdrop").on("click", function () {
+        M.$portal.find("#btn-close-drawer, #mobileDrawer-backdrop").on("click", function () {
           drawer.addClass("translate-x-full");
           setTimeout(() => drawer.addClass("hidden"), 300);
           backdrop.addClass("hidden");
         });
     },
 
+    // TODO เข้า link ตรงได้อยู่
     requireLogin: function(opts) {
         var user = M.getItemStorage('user');
         if (!user) {
