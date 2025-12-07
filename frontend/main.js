@@ -143,7 +143,7 @@ var M = {
                 var $HL = $divMainPage.find('.HL');
     
                 var $item = $(data).attr('data-page', page);
-                $HL.insertBefore($item);
+                $item.insertBefore($HL);
     
                 if (callback) callback($item);
             },
