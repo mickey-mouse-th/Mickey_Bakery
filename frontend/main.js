@@ -107,12 +107,8 @@ var M = {
         M.showLoader();
         if ($exist.length > 0) {
             var ctx0 = $exist.data('ctx');
-            if (!ctx0 && window.bakery[page] && typeof window.bakery[page] === 'function') {
-                ctx0 = new window.bakery[page]();
-                $exist.data('ctx', ctx0);
-            }
-    
-            if (ctx0 && ctx0.load) ctx0.load();
+            if (ctx0.load) ctx0.load();
+            
             $exist.show();
             M.hideLoader();
             return;
