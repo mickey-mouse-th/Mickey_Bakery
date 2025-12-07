@@ -83,7 +83,8 @@ var M = {
                 var $divMainPage = $('.divMainPage');
                 var $HF = $divMainPage.find('.HF');
                 var $HL = $divMainPage.find('.HL');
-                var $item = $(data);
+                var $item = $HL.clone().removeClass('HT').addClass('HI');
+                $item.html(data);
                 $item.attr('data-page', page);
                 $HL.after($item);
 
