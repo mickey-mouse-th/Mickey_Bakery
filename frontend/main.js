@@ -18,11 +18,11 @@ var M = {
         M.initMENU();
 
         if (!M.requireLogin()) {
-            M.$portal.find('.divHeader:not([data-mode="' + M.mode + '"]').remove();
-            M.$portal.find('.divHeader').removeClass('hidden');
             M.goPageLink();
         }
 
+        M.$portal.find('.divHeader:not([data-mode="' + M.mode + '"]').remove();
+        M.$portal.find('.divHeader').removeClass('hidden');
         window.onhashchange = function(e) {
             if (!M.requireLogin()) {
                 M.goPageLink();
