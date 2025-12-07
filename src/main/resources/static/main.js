@@ -277,10 +277,10 @@ var M = {
     },
 
     showLoader: function() {
-        M.$portal.find("#M-loading").removeClass("hidden");
+        M.$portal.find(".divLoading").removeClass("hidden");
     },
     hideLoader: function() {
-        M.$portal.find("#M-loading").addClass("hidden");
+        M.$portal.find(".divLoading").addClass("hidden");
     },
 
     about: function() {
