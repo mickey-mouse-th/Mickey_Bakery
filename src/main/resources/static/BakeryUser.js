@@ -18,13 +18,12 @@ window.bakery.BakeryUser.prototype = function() {
 	};
 
 	var initPageControl = function() {
-		var $divLogin = self.$scope.find('.divLogin');
-		var $username = $divLogin.find('[data-fld="username"]');
-		var $password = $divLogin.find('[data-fld="password"]');
-		var $err = $divLogin.find('#auth-error');
+		var $username = self.$scope.find('[data-fld="username"]');
+		var $password = self.$scope.find('[data-fld="password"]');
+		var $err = self.$scope.find('#auth-error');
 		var $divRegisterModal = self.$scope.find('.divRegisterModal');
 		
-		$divLogin.on('click', '.btnLogin', function () {
+		self.$scope.on('click', '.btnLogin', function () {
 			var deviceId = M.getItemStorage('deviceId');
 			if (!deviceId) {
 				deviceId = crypto.randomUUID();
@@ -68,7 +67,7 @@ window.bakery.BakeryUser.prototype = function() {
 			});
 		});
 		
-		$divLogin.on('click', '.btnRegister', function () {
+		self.$scope.on('click', '.btnRegister', function () {
 			$divRegisterModal.find('[data-fld="name"]').val('');
 			$divRegisterModal.find('[data-fld="username"]').val('');
 			$divRegisterModal.find('[data-fld="password"]').val('');
