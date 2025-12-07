@@ -10,12 +10,6 @@ window.bakery.BakeryIngredient.prototype = function() {
         self.$scope = $scope || $('#none');
         self.cb = cb;
 
-        const user = requireLogin({ adminOnly:true });
-        if (!user) return;
-
-        highlightNav('ing');
-        initNavbarUser(user);
-
         self.tbody = document.getElementById('ing-tbody');
         self.empty = document.getElementById('ing-empty');
 
