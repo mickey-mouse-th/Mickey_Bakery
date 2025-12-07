@@ -82,15 +82,14 @@ var M = {
         $divMainPage.children('[data-page]').hide();
         var $exist = $divMainPage.children('[data-page="' + page + '"]');
     
+        M.showLoader();
         if ($exist.length > 0) {
             $exist.show();
             var ctx = $exist.data('ctx');
             if (ctx.load) ctx.load($item);
-    
+            M.hideLoader();
             return;
         }
-    
-        console.log("โหลดหน้าใหม่:", page);
     
         M.loadHtml(page, function($item){
             M.loadJs(page, function(){
@@ -101,6 +100,7 @@ var M = {
                     if (ctx.init) ctx.init($item);
                     if (ctx.load) ctx.load($item);
                 }
+                M.hideLoader();
             });
         });
     },
