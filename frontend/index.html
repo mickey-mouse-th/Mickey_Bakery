@@ -54,26 +54,17 @@
     
 </head>
 <body class="divPortal bg-slate-950 text-slate-100 min-h-screen">
-  <!-- HEADER -->
   <header class="sticky top-0 z-50 bg-slate-950/80 backdrop-blur border-b border-slate-800">
-    <div class="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+    <div class="divHeader max-w-7xl mx-auto px-4 h-14 flex items-center justify-between hidden" data-mode="admin">
 
-      <!-- LEFT: Logo -->
       <div class="flex items-center gap-2">
-        <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 
-                    flex items-center justify-center font-bold text-sm shadow-md">
-          SL
-        </div>
+        <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center font-bold text-sm shadow-md">SL</div>
         <div class="flex flex-col leading-tight">
           <span class="font-semibold text-white text-sm">SweetLab</span>
-          <span id="role-badge" class="text-[10px] mt-0.5 px-1 rounded-full bg-amber-500/10
-                                      text-amber-300 border border-amber-500/40 w-fit">
-            Admin
-          </span>
+          <span id="role-badge" class="text-[10px] mt-0.5 px-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/40 w-fit">Admin</span>
         </div>
       </div>
 
-      <!-- CENTER: Desktop Menu -->
       <nav class="hidden md:flex items-center gap-4 text-sm">
         <a href="#/admin/ingredient" class="nav-item">วัตถุดิบ</a>
         <a href="#/admin/admin-recipe" class="nav-item">เมนู & ขั้นตอน</a>
@@ -83,7 +74,6 @@
         <a href="#/user-recipe" class="nav-item">มุมมองผู้ใช้</a>
       </nav>
 
-      <!-- RIGHT: User + Logout -->
       <div class="hidden md:flex items-center gap-3 text-xs">
         <div class="text-right leading-tight">
           <div id="nav-username" class="font-medium text-slate-100"></div>
@@ -92,13 +82,9 @@
         <button id="btn-logout" class="btn-logout">Logout</button>
       </div>
 
-      <!-- Hamburger (Mobile) -->
       <button id="btn-ham" class="md:hidden p-2 text-slate-200 text-xl">☰</button>
-
     </div>
 
-
-    <!-- ===== MOBILE DRAWER (จากขวาแบบ modal) ===== -->
     <div id="mobileDrawer-backdrop"
         class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40"></div>
 
@@ -127,6 +113,11 @@
       </div>
 
     </div>
+
+    <div class="divHeader max-w-6xl mx-auto px-4 h-14 flex items-center justify-between hidden" data-mode="user">
+      <a href="#/user-recipe" class="navlink-user">เมนูทั้งหมด</a>
+    </div>
+
   </header>
 
   <div class="divMainPage min-h-screen flex flex-col">

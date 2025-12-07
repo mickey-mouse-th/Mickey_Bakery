@@ -19,7 +19,7 @@ var M = {
 
         if (!M.requireLogin()) {
             M.$portal.find('.divHeader:not([data-mode="' + M.mode + '"]').remove();
-            M.$portal.find('.divHeader').show();
+            M.$portal.find('.divHeader').removeClass('hidden');
             M.goPageLink();
         }
 
