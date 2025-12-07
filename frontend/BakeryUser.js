@@ -69,7 +69,9 @@ window.bakery.BakeryUser.prototype = function() {
 					}
 		
 					M.setItemStorage('user', ret.user);
-					M.goPageLink();
+					if (!M.requireLogin()) {
+						M.goPageLink();
+					}
 				},
 				error: function (xhr, status, error) {
 					M.hideLoader();
