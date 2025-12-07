@@ -32,11 +32,22 @@ var M = {
             M.clearStorage();
             window.location.href = '';
         });
-        M.$portal.find("#btn-ham").on("click", function() {
-            M.$portal.find("#mobileMenu-admin").toggleClass("hidden");
+
+        // TODO Fix
+        const drawer = $("#mobileDrawer");
+        const backdrop = $("#mobileDrawer-backdrop");
+      
+        // เปิดเมนู
+        $("#btn-ham").on("click", function () {
+          drawer.removeClass("hidden").removeClass("translate-x-full");
+          backdrop.removeClass("hidden");
         });
-        M.$portal.find("#btn-ham-user").on("click", function() {
-            M.$portal.find("#mobileMenu-user").toggleClass("hidden");
+      
+        // ปิดเมนู
+        $("#btn-close-drawer, #mobileDrawer-backdrop").on("click", function () {
+          drawer.addClass("translate-x-full");
+          setTimeout(() => drawer.addClass("hidden"), 300);
+          backdrop.addClass("hidden");
         });
     },
 

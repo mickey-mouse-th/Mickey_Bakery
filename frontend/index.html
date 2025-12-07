@@ -27,131 +27,108 @@
     .drag-handle { cursor: grab; }
     .dragging { opacity: .5; }
   </style>
+  <style>
+    .nav-item {
+      @apply text-slate-300 px-2 py-1 relative;
+    }
+    .nav-item:hover {
+      @apply text-white;
+    }
+    .nav-item::after {
+      content: '';
+      @apply absolute left-0 right-0 bottom-0 h-[2px] bg-sky-500 scale-x-0 transition-transform;
+    }
+    .nav-item:hover::after {
+      @apply scale-x-100;
+    }
+    
+    .btn-logout {
+      @apply text-xs px-3 py-1.5 rounded-full border border-slate-700 
+             text-slate-300 hover:bg-slate-800 transition;
+    }
+    
+    .mob-nav {
+      @apply text-slate-200 py-2 px-2 rounded hover:bg-slate-800/70 hover:text-white transition;
+    }
+    </style>
+    
 </head>
 <body class="divPortal bg-slate-950 text-slate-100 min-h-screen">
-  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur">
-    <!-- COMMON HEADER WRAPPER -->
-    <div class="divHeader max-w-6xl mx-auto px-4 h-14 flex items-center justify-between"
-         data-mode="admin" style="display:none">
-      
-      <!-- Logo + Role -->
+  <!-- HEADER -->
+  <header class="sticky top-0 z-50 bg-slate-950/80 backdrop-blur border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+
+      <!-- LEFT: Logo -->
       <div class="flex items-center gap-2">
-        <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-xs font-bold">
+        <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 
+                    flex items-center justify-center font-bold text-sm shadow-md">
           SL
         </div>
         <div class="flex flex-col leading-tight">
-          <span class="font-semibold text-slate-100">SweetLab</span>
-          <span class="text-[10px] px-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/40 w-fit">
+          <span class="font-semibold text-white text-sm">SweetLab</span>
+          <span id="role-badge" class="text-[10px] mt-0.5 px-1 rounded-full bg-amber-500/10
+                                      text-amber-300 border border-amber-500/40 w-fit">
             Admin
           </span>
         </div>
       </div>
-  
-      <!-- Desktop Menu -->
-      <nav class="hidden md:flex items-center gap-2 text-sm">
-        <a href="#/admin/ingredient" class="nav-ing navlink-admin">วัตถุดิบ</a>
-        <a href="#/admin/admin-recipe" class="nav-rec navlink-admin">เมนู & ขั้นตอน</a>
-        <a href="#/admin/cost" class="nav-cost navlink-admin">คำนวณต้นทุน</a>
-        <a href="#/admin/dashboard" class="nav-dash navlink-admin">Dashboard</a>
-        <a href="#/admin/manage-role" class="nav-role navlink-admin">จัดการสิทธิ์</a>
-        <a href="#/user-recipe" class="navlink-admin">มุมมองผู้ใช้</a>
+
+      <!-- CENTER: Desktop Menu -->
+      <nav class="hidden md:flex items-center gap-4 text-sm">
+        <a href="#/admin/ingredient" class="nav-item">วัตถุดิบ</a>
+        <a href="#/admin/admin-recipe" class="nav-item">เมนู & ขั้นตอน</a>
+        <a href="#/admin/cost" class="nav-item">คำนวณต้นทุน</a>
+        <a href="#/admin/dashboard" class="nav-item">Dashboard</a>
+        <a href="#/admin/manage-role" class="nav-item">จัดการสิทธิ์</a>
+        <a href="#/user-recipe" class="nav-item">มุมมองผู้ใช้</a>
       </nav>
-  
-      <!-- Right: user info + logout -->
+
+      <!-- RIGHT: User + Logout -->
       <div class="hidden md:flex items-center gap-3 text-xs">
-        <div class="text-right hidden sm:block">
+        <div class="text-right leading-tight">
           <div id="nav-username" class="font-medium text-slate-100"></div>
           <div id="nav-role" class="text-[11px] text-slate-400"></div>
         </div>
-        <button id="btn-logout"
-                class="text-xs px-3 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800">
-          Logout
-        </button>
+        <button id="btn-logout" class="btn-logout">Logout</button>
       </div>
-  
-      <!-- Hamburger (Mobile only) -->
-      <button class="md:hidden p-2 text-slate-200" id="btn-ham">
-        ☰
-      </button>
+
+      <!-- Hamburger (Mobile) -->
+      <button id="btn-ham" class="md:hidden p-2 text-slate-200 text-xl">☰</button>
+
     </div>
-  
-  
-    <!-- MOBILE MENU : ADMIN -->
-    <div id="mobileMenu-admin"
-         class="hidden md:hidden flex-col bg-slate-900/95 border-b border-slate-800 px-4 py-3 space-y-3 text-sm"
-         data-mode="admin">
-  
-      <a href="#/admin/ingredient" class="nav-ing navlink-admin-m">วัตถุดิบ</a>
-      <a href="#/admin/admin-recipe" class="nav-rec navlink-admin-m">เมนู & ขั้นตอน</a>
-      <a href="#/admin/cost" class="nav-cost navlink-admin-m">คำนวณต้นทุน</a>
-      <a href="#/admin/dashboard" class="nav-dash navlink-admin-m">Dashboard</a>
-      <a href="#/admin/manage-role" class="nav-role navlink-admin-m">จัดการสิทธิ์</a>
-      <a href="#/user-recipe" class="navlink-admin-m">มุมมองผู้ใช้</a>
-  
-      <div class="pt-3 border-t border-slate-700 text-xs">
+
+
+    <!-- ===== MOBILE DRAWER (จากขวาแบบ modal) ===== -->
+    <div id="mobileDrawer-backdrop"
+        class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40"></div>
+
+    <div id="mobileDrawer"
+        class="hidden fixed top-0 right-0 w-64 h-full bg-slate-900/95 border-l border-slate-700 
+                shadow-xl z-50 p-5 flex flex-col transform translate-x-full transition-all duration-300">
+
+      <div class="flex items-center justify-between mb-6">
+        <span class="text-white font-semibold text-lg">เมนู</span>
+        <button id="btn-close-drawer" class="text-slate-300 text-2xl">×</button>
+      </div>
+
+      <nav class="flex flex-col gap-4 text-sm">
+        <a href="#/admin/ingredient"   class="mob-nav">วัตถุดิบ</a>
+        <a href="#/admin/admin-recipe" class="mob-nav">เมนู & ขั้นตอน</a>
+        <a href="#/admin/cost"         class="mob-nav">คำนวณต้นทุน</a>
+        <a href="#/admin/dashboard"    class="mob-nav">Dashboard</a>
+        <a href="#/admin/manage-role"  class="mob-nav">จัดการสิทธิ์</a>
+        <a href="#/user-recipe"        class="mob-nav">มุมมองผู้ใช้</a>
+      </nav>
+
+      <div class="mt-auto pt-6 border-t border-slate-700 text-xs">
         <div id="nav-username-m" class="font-medium text-slate-100"></div>
-        <div id="nav-role-m" class="text-[11px] text-slate-400 mb-2"></div>
-        <button id="btn-logout-m"
-                class="mt-2 text-xs px-3 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800">
-          Logout
-        </button>
+        <div id="nav-role-m" class="text-[11px] text-slate-400 mb-3"></div>
+        <button id="btn-logout-m" class="btn-logout w-full">Logout</button>
       </div>
+
     </div>
-  
-    <!-- USER HEADER -->
-    <div class="divHeader max-w-6xl mx-auto px-4 h-14 flex items-center justify-between"
-         data-mode="user" style="display:none">
-  
-      <div class="flex items-center gap-2">
-        <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-emerald-400 to-sky-500 flex items-center justify-center text-xs font-bold">
-          SL
-        </div>
-        <div class="flex flex-col leading-tight">
-          <span class="font-semibold text-slate-100">SweetLab</span>
-          <span class="text-[10px] px-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/40 w-fit">
-            User
-          </span>
-        </div>
-      </div>
-  
-      <nav class="hidden md:flex items-center gap-2 text-sm">
-        <a href="#/user-recipe" class="navlink-user">เมนูทั้งหมด</a>
-      </nav>
-  
-      <div class="hidden md:flex items-center gap-3 text-xs">
-        <div class="text-right hidden sm:block">
-          <div id="nav-username" class="font-medium text-slate-100"></div>
-          <div id="nav-role" class="text-[11px] text-slate-400"></div>
-        </div>
-        <button id="btn-logout"
-                class="text-xs px-3 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800">
-          Logout
-        </button>
-      </div>
-  
-      <button class="md:hidden p-2 text-slate-200" id="btn-ham-user">
-        ☰
-      </button>
-    </div>
-  
-    <!-- MOBILE MENU : USER -->
-    <div id="mobileMenu-user"
-         class="hidden md:hidden flex-col bg-slate-900/95 border-b border-slate-800 px-4 py-3 space-y-3 text-sm"
-         data-mode="user">
-  
-      <a href="#/user-recipe" class="navlink-user">เมนูทั้งหมด</a>
-  
-      <div class="pt-3 border-t border-slate-700 text-xs">
-        <div id="nav-username-m2" class="font-medium text-slate-100"></div>
-        <div id="nav-role-m2" class="text-[11px] text-slate-400 mb-2"></div>
-        <button id="btn-logout-m2"
-                class="mt-2 text-xs px-3 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:bg-slate-800">
-          Logout
-        </button>
-      </div>
-    </div>
-  
   </header>
+
   <div class="divMainPage min-h-screen flex flex-col">
     <div class="HF" style="display:none"></div>
     <div class="HL" style="display:none"></div>
