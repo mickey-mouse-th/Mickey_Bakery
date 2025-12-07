@@ -32,6 +32,12 @@ var M = {
             M.clearStorage();
             window.location.href = '';
         });
+        M.$portal.find("#btn-ham").on("click", function() {
+            M.$portal.find$("#mobileMenu-admin").toggleClass("hidden");
+        });
+        M.$portal.find("#btn-ham-user").on("click", function() {
+            M.$portal.find("#mobileMenu-user").toggleClass("hidden");
+        });
     },
 
     requireLogin: function(opts) {
