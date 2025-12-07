@@ -107,12 +107,13 @@ var M = {
         M.showLoader();
         if ($exist.length > 0) {
             var ctx0 = $exist.data('ctx');
-            if (!ctx0 && window.bakery[page] && typeof window.bakery[page] === 'function') {
-                ctx0 = new window.bakery[page]();
-                $exist.data('ctx', ctx0);
-            }
+            // if (!ctx0 && window.bakery[page] && typeof window.bakery[page] === 'function') {
+            //     ctx0 = new window.bakery[page]();
+            //     $exist.data('ctx', ctx0);
+            // }
     
-            if (ctx0 && ctx0.load) ctx0.load();
+            // if (ctx0 && ctx0.load) ctx0.load();
+            if (ctx0.load) ctx0.load();
             $exist.show();
             M.hideLoader();
             return;
@@ -133,6 +134,7 @@ var M = {
     },
     
     loadHtml: function(page, callback) {
+        console.log('[DEBUG] load html=' + page);
         $.ajax({
             url: page + '.html',
             type: "GET",
@@ -152,6 +154,7 @@ var M = {
     },
     
     loadJs: function(page, callback) {
+        console.log('[DEBUG] load js=' + page);
         $.getScript(page + '.js', function(){
             console.log("โหลด JS สำเร็จ:", page);
             if (callback) callback();
