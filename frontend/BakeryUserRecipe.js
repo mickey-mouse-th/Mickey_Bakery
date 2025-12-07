@@ -20,7 +20,20 @@ window.bakery.BakeryUserRecipe.prototype = function() {
         self.$empty = document.getElementById('user-rec-empty');
     };
 
-    var load = function() {
+    var load = function(info, cbLoadDone, cbPageBack) {
+		log('load at ' + new Date().toISOString(), info);
+		self.info = info;
+		self.cbLoadDone = cbLoadDone;
+		self.cbPageBack = cbPageBack;
+
+		// Clear Filter
+		self.$scope.find(':input.txtSearch').val("");
+
+		doLoad();
+		onLoadDone();
+	};
+
+    var doLoad = function() {
         const list = []; // TODO
         if (!list.length) {
             self.$empty.classList.remove('hidden');
@@ -40,6 +53,13 @@ window.bakery.BakeryUserRecipe.prototype = function() {
             `;
             self.$container.appendChild(div);
         });
+    };
+
+    var onLoadDone = function() {
+        log('onLoadDone ...');
+        if (self.cbLoadDone) {
+          self.cbLoadDone.call(null);
+        }
     };
 
     var log = function(data) {
