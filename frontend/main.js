@@ -106,8 +106,8 @@ var M = {
         M.showLoader();
         if ($exist.length > 0) {
             $exist.show();
-            var ctx = $exist.data('ctx');
-            if (ctx.load) ctx.load();
+            var ctx0 = $exist.data('ctx');
+            if (ctx0.load) ctx0.load();
             M.hideLoader();
             return;
         }
