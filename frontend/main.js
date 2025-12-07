@@ -86,7 +86,7 @@ var M = {
         if ($exist.length > 0) {
             $exist.show();
             var ctx = $exist.data('ctx');
-            if (ctx.load) ctx.load($item);
+            if (ctx.load) ctx.load();
             M.hideLoader();
             return;
         }
@@ -98,7 +98,7 @@ var M = {
                     $item.data('ctx', ctx);
 
                     if (ctx.init) ctx.init($item);
-                    if (ctx.load) ctx.load($item);
+                    if (ctx.load) ctx.load();
                 }
                 M.hideLoader();
             });
