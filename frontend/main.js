@@ -28,7 +28,7 @@ var M = {
                 M.goPageLink();
             }
         }
-        M.$portal.on('click', '#btn-logout', function() {
+        M.$portal.on('click', '.btnLogout', function() {
             M.clearStorage();
             window.location.href = '';
         });
