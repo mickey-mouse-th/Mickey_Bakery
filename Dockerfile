@@ -1,4 +1,8 @@
 FROM maven:3.9.6-eclipse-temurin-21 AS build
+
+# FORCE REBUILD
+ENV CACHE_BUSTER=20251208
+
 WORKDIR /app
 
 COPY pom.xml .
