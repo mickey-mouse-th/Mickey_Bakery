@@ -119,7 +119,7 @@ var M = {
 
             var tokenStr = atok ? atok.token : '';
 
-            var host = (M.isDEV === '1') ? M.hostDebug : M.hostService;
+            var host = !!M.isDEV ? M.hostDebug : M.hostService;
             var url = host + '/' + path;
 
             var timeout = 5000;

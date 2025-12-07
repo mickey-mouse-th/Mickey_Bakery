@@ -38,7 +38,7 @@ window.bakery.BakeryUser.prototype = function() {
 				deviceId: deviceId
 			};
 		
-			var host = (M.isDEV === '1') ? M.hostDebug : M.hostService;
+			var host = !!M.isDEV ? M.hostDebug : M.hostService;
 			var url = host + '/bakery-api/user/login';
 		
 			M.showLoader();
@@ -89,7 +89,7 @@ window.bakery.BakeryUser.prototype = function() {
 				return;
 			}
 		
-			var host = (M.isDEV === '1') ? M.hostDebug : M.hostService;
+			var host = !!M.isDEV ? M.hostDebug : M.hostService;
 			var url = host + '/bakery-api/user/register';
 			
 			M.showLoader();
