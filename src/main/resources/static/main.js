@@ -4,8 +4,8 @@ var M = {
     SHARE: 'share',
     storageKey: 'bakery',
     roleTypeMap: {
-        '0': 'user',
-        '1': 'admin'
+        0: 'user',
+        1: 'admin'
     },
 
     $portal: $('.divPortal'),
@@ -40,7 +40,7 @@ var M = {
             return null;
         }
 
-        var role = M.roleTypeMap[user.roleType] || M.USER;
+        var role = M.roleTypeMap[Number(user.roleType)] || M.USER;
         if (opts && opts.adminOnly && role != M.ADMIN) {
             M.main = 'user-recipe';
             M.mode = '';
