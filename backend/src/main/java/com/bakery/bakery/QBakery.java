@@ -135,6 +135,7 @@ public class QBakery {
     }
 
     // --- Core Fields ---
+    public boolean isDiag = false;
     List<TableDef> tables = new ArrayList<>();
 //    List<String> whereList = new ArrayList<>();
     private List<Object> params = new ArrayList<>();
@@ -370,7 +371,9 @@ public class QBakery {
         List<Map<String,Object>> result = new ArrayList<>();
 
         String sql = buildSelect();
-        System.out.println("Executing SQL:\n" + sql); // debug
+        if (isDiag) {
+        	 System.out.println("Executing SQL:\n" + sql); // debug
+        }
 
         try (Connection conn = DB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
