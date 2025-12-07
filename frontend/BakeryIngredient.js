@@ -7,6 +7,7 @@ window.bakery.BakeryIngredient.prototype = function() {
     var self = this;
 
     var init = function($scope, cb) {
+        self = this;
         self.$scope = $scope || $('#none');
         self.cb = cb;
 
