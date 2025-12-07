@@ -11,6 +11,8 @@ var M = {
     $portal: $('.divPortal'),
 
     isDEV: localStorage.isDEV === '1',
+    hostService: 'https://bakery-backend-mzwv.onrender.com',
+    hostDebug: 'http://localhost:8080',
 
     init: function() {
         M.initMENU();
@@ -117,7 +119,7 @@ var M = {
 
             var tokenStr = atok ? atok.token : '';
 
-            var host = (M.isDEV === '1') ? 'http://localhost:8080' : '';
+            var host = (M.isDEV === '1') ? M.hostDebug : M.hostService;
             var url = host + '/' + path;
 
             var timeout = 5000;
