@@ -72,37 +72,67 @@ var M = {
 
     goPageLink: function() {
         var menu = M.main || '';
-        var map = M.MENU[M.mode] || {};
+        var map  = M.MENU[M.mode] || {};
         var page = map.page[menu] || map.form[menu] || map.default;
         M.loadPage(page);
     },
-
+    
     loadPage: function(page) {
+        var $divMainPage = M.$portal.find('.divMainPage');
+        $divMainPage.children('[data-page]').hide();
+        var $exist = $divMainPage.children('[data-page="' + page + '"]');
+    
+        if ($exist.length > 0) {
+            $exist.show();
+            var ctx = $exist.data('ctx');
+            if (ctx.load) ctx.load($item);
+    
+            return;
+        }
+    
+        console.log("โหลดหน้าใหม่:", page);
+    
+        M.loadHtml(page, function($item){
+            M.loadJs(page, function(){
+                if (window.bakery[page] && typeof window.bakery[page] === 'function') {
+                    var ctx = new window.bakery[page]();
+                    $item.data('ctx', ctx);
+
+                    if (ctx.init) ctx.init($item);
+                    if (ctx.load) ctx.load($item);
+                }
+            });
+        });
+    },
+    
+    loadHtml: function(page, callback) {
         $.ajax({
             url: page + '.html',
             type: "GET",
-            success: function (data) {
+            success: function(data) {
                 var $divMainPage = $('.divMainPage');
-                var $HF = $divMainPage.find('.HF');
                 var $HL = $divMainPage.find('.HL');
-                var $item = $(data);
-                $item.attr('data-page', page);
+    
+                var $item = $(data).attr('data-page', page);
                 $HL.after($item);
-
-                $.getScript(page + '.js', function () {
-                    console.log("โหลด JS สำเร็จ และรันแล้ว");
-                    if(window.bakery[page] && typeof window.bakery[page] === 'function') {
-                        var script = new window.bakery[page]();
-                        if(script.init) script.init($item);
-                    }
-                });
+    
+                if (callback) callback($item);
             },
-            error: function () {
-                console.log("โหลด HTML ไม่สำเร็จ");
+            error: function() {
+                console.log("โหลด HTML ไม่สำเร็จ:", page);
             }
         });
     },
-
+    
+    loadJs: function(page, callback) {
+        $.getScript(page + '.js', function(){
+            console.log("โหลด JS สำเร็จ:", page);
+            if (callback) callback();
+        }).fail(function(){
+            console.log("โหลด JS ไม่สำเร็จ:", page);
+        });
+    },
+    
     callServer: function(method, path, data) {
     method = (method || 'GET').toUpperCase();
     path = path.replace(/^\/+/, '');
