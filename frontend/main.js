@@ -209,6 +209,9 @@ var M = {
     
     getValidAccessToken: function() {
     return new Promise((resolve, reject) => {
+        resolve({});
+        return;
+        
         var user = M.getItemStorage('user')
         if (!user) {
             resolve(null);
