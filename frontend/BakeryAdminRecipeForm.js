@@ -1,9 +1,9 @@
 window.bakery = window.bakery || {};
-window.bakery.BakeryAdminRecipe = function($scope) {
-    this.logPrefix = '[BakeryAdminRecipe] ';
+window.bakery.BakeryAdminRecipeForm = function($scope) {
+    this.logPrefix = '[BakeryAdminRecipeForm] ';
 }
 
-window.bakery.BakeryAdminRecipe.prototype = function() {
+window.bakery.BakeryAdminRecipeForm.prototype = function() {
     var self = this;
     var init = function ($scope, cb) {
 		self = this;
@@ -204,4 +204,4 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
     };
 	  return publicFunctions;
 }();
-//# sourceURL=BakeryAdminRecipe.js
+//# sourceURL=BakeryAdminRecipeForm.js
