@@ -38,9 +38,23 @@ window.bakery.BakeryManageRole.prototype = function() {
     };
 
     var doLoad = function() {
+        M.callServer("POST", "bakery-api/user/list", {})
+        .then(function(res) {
+            if (res.status != 'OK') {
+                M.showNotification('Cannot load user', 'warn');
+                return;
+            }
+            var list = res.list || [];
+            onLoadList(list);
+        })
+        .catch(function(err) {
+            log('err=', err);
+        });
+    };
+
+    var onLoadList = function(list) {
         self.$tbody.empty();
 
-        var list = []; // TODO load user
         if (!list.length) {
             log('No users found');
             return;
@@ -49,15 +63,15 @@ window.bakery.BakeryManageRole.prototype = function() {
         list.forEach(u => {
             var tr = $(`
                 <tr>
-                    <td class="px-3 py-2">${u.username}</td>
+                    <td class="px-3 py-2">${u.name}</td>
                     <td class="px-3 py-2">
-                        <select data-uid="${u.id}" class="role-select rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-slate-100">
-                            <option value="user" ${u.role === M.USER ? 'selected' : ''}>User</option>
-                            <option value="admin" ${u.role === M.ADMIN ? 'selected' : ''}>Admin</option>
+                        <select data-uid="${u.accId}" class="role-select rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-slate-100">
+                            <option value="user" ${u.roleType === 0 ? 'selected' : ''}>User</option>
+                            <option value="admin" ${u.roleType === 1 ? 'selected' : ''}>Admin</option>
                         </select>
                     </td>
                     <td class="px-3 py-2 text-right text-xs text-slate-400">
-                        สร้างเมื่อ: ${new Date(u.createdAt || Date.now()).toLocaleString('th-TH')}
+                        สร้างเมื่อ: ${new Date(u.creDate || Date.now()).toLocaleString('th-TH')}
                     </td>
                 </tr>
             `);
