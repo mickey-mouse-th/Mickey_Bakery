@@ -33,36 +33,13 @@ public class UserService implements ApiHandler {
     @Override
     public void handle(String action, HttpServletRequest req, HttpServletResponse res) {
         switch (action) {
-            case "list": listUsers(req, res); break;
-            case "add": addUser(req, res); break;
             case "register": register(req, res); break;
             case "login": login(req, res); break;
+            case "list": list(req, res); break;
             default:  ResUtils.responseJsonResult(res, Map.of("error", "Unknown action: " + action));
         }
     }
 
-    private void listUsers(HttpServletRequest req, HttpServletResponse res) {
-    	QBakery qb = new QBakery();
-    	qb.addTable("test_users").field("fid, name, username, age");
-    	List<Map<String, Object>> list = qb.listData();
-        Map<String, Object> result = Map.of(
-                "status", "OK",
-                "list", list
-        );
-        ResUtils.responseJsonResult(res, result);
-    }
-
-    private void addUser(HttpServletRequest req, HttpServletResponse res) {
-        String name = req.getParameter("name");
-        if (name == null) {
-            res.setStatus(400);
-            ResUtils.responseJsonResult(res, Map.of("error", "Missing name"));
-            return;
-        }
-
-        ResUtils.responseJsonResult(res, Map.of("status", "created", "name", name));
-    }
-    
     public void register(HttpServletRequest req, HttpServletResponse res) {
     	Map<String, String> params = ReqUtils.getAllParams(req);
     	String name = params.get("name");
@@ -144,5 +121,16 @@ public class UserService implements ApiHandler {
         
         ResUtils.responseJsonResult(res, Map.of("status", "OK", "user", list0));
     }
+
+    public void list(HttpServletRequest req, HttpServletResponse res) {
+    	Map<String, String> params = ReqUtils.getAllParams(req);
+        
+        QBakery qb = new QBakery();
+        qb.addTable("Account").field("id accId, name, username, roleType, tagList, creDate");
+        List<Map<String, Object>> list = qb.listData();
+
+        ResUtils.responseJsonResult(res, Map.of("status", "OK", "list", list));
+    }
+
 }
 
