@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class UserService implements ApiHandler {
@@ -35,7 +36,10 @@ public class UserService implements ApiHandler {
         switch (action) {
             case "register": register(req, res); break;
             case "login": login(req, res); break;
+            case "logout": logout(req, res); break;
+            
             case "list": list(req, res); break;
+            case "load": load(req, res); break;
             default:  ResUtils.responseJsonResult(res, Map.of("error", "Unknown action: " + action));
         }
     }
@@ -122,11 +126,49 @@ public class UserService implements ApiHandler {
         ResUtils.responseJsonResult(res, Map.of("status", "OK", "user", list0));
     }
 
-    public void list(HttpServletRequest req, HttpServletResponse res) {
+    public void logout(HttpServletRequest req, HttpServletResponse res) {
     	Map<String, String> params = ReqUtils.getAllParams(req);
         
+        String accId = params.get("accId");
+        String deviceId = params.get("deviceId");
+        
+        QBakery qb = new QBakery();
+        qb.addTable("RefreshToken").filter("accId", accId, "deviceId", deviceId).field("id, accId, deviceId");
+        List<Map<String, Object>> list = qb.listData();
+        
+        List<Object> ids = list.stream().map(o -> o.get("id")).collect(Collectors.toList());
+        
+        SqlUtils sql = new SqlUtils();
+        sql.deleteList("RefreshToken", ids);
+        
+        ResUtils.responseJsonResult(res, Map.of("status", "OK"));
+    }
+
+    public void list(HttpServletRequest req, HttpServletResponse res) {
         QBakery qb = new QBakery();
         qb.addTable("Account").field("id accId, name, username, roleType, tagList, creDate");
+        List<Map<String, Object>> list = qb.listData();
+
+        ResUtils.responseJsonResult(res, Map.of("status", "OK", "list", list));
+    }
+    
+    public void load(HttpServletRequest req, HttpServletResponse res) {
+    	Map<String, String> params = ReqUtils.getAllParams(req);
+    	String name = params.get("name");
+    	String accId = params.get("accId");
+    	
+    	Map<String, String> filter = new HashMap<String, String>();
+    	if (!accId.isEmpty()) {
+    		filter.put("accId", accId);
+    		
+    	} else {
+    		if (!name.isEmpty()) {
+    			filter.put("name", name);
+    		}
+    	}
+        
+        QBakery qb = new QBakery();
+        qb.addTable("Account").filter(filter).field("id accId, name, username, roleType, tagList, creDate");
         List<Map<String, Object>> list = qb.listData();
 
         ResUtils.responseJsonResult(res, Map.of("status", "OK", "list", list));

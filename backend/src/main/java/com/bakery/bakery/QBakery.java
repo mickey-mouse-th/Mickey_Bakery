@@ -26,6 +26,13 @@ public class QBakery {
             this.alias = alias;
         }
         
+        public TableDef filter(Map<String, String> filter) {
+        	String[] array = filter.entrySet().stream()
+        		    .map(entry -> entry.getKey() + "=" + entry.getValue())
+        		    .toArray(String[]::new);
+        	return filter(array);
+        }
+        
         public TableDef filter(String... kv) {
         	if (kv == null || kv.length % 2 != 0) {
                 throw new IllegalArgumentException("filter requires key/value pairs");
