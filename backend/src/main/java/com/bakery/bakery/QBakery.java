@@ -20,6 +20,7 @@ public class QBakery {
         private List<String> whereList = new ArrayList<>();
         private StringBuilder whereClause = new StringBuilder();
         private Map<String, String> fieldMap = new HashMap<String, String>();
+        Set<String> columns = new HashSet<>();
 
         public TableDef(String tableName, String alias) {
             this.tableName = tableName;
@@ -97,9 +98,14 @@ public class QBakery {
         	        String fieldTo = fArr.size() >=2 ? fArr.get(1) : "";
         	        setFieldList(!fieldTo.isEmpty() ? fieldTo : fieldFo);
         	        if (!fieldTo.isEmpty()) fieldMap.put(fieldTo, fieldFo);
-        	        return alias + "." + "\"" + fieldFo + "\"" + (!fieldTo.isEmpty() ? (" AS " + fieldTo) : "");
+        	        return alias + "." + "\"" + fieldFo + "\"" + (!fieldTo.isEmpty() ? (" AS " + "\"" + fieldTo + "\"") : "");
         	    })
         	    .collect(Collectors.joining(","));
+        	
+        	 for (String part : f.split(",")) {
+    	        String col = part.trim().split(" ")[0];
+    	        columns.add(col);
+    	    }
             return this;
         }
         public String getField() {
@@ -160,6 +166,7 @@ public class QBakery {
     Map<String, Object> updateValues = new LinkedHashMap<>();
     String targetTable = null;
     String command = "SELECT";  // SELECT / INSERT / UPDATE / DELETE
+    private final Set<String> usedAliases = new HashSet<>();
 
     public TableDef addTable(String tableName) {
         String alias = "t" + (tables.size() + 1);
@@ -282,26 +289,61 @@ public class QBakery {
 
     // --- SELECT ---
     private String buildSelect() {
-        StringBuilder sb = new StringBuilder();
-
+        StringBuilder select = new StringBuilder("SELECT ");
+        StringBuilder from   = new StringBuilder();
+        usedAliases.clear();
+        
         for (int i = 0; i < tables.size(); i++) {
             TableDef t = tables.get(i);
-            String fields = t.getField();
-            if (i == 0) {
-            	sb.append("SELECT " + (fields.isEmpty() ? "*" : fields));
-            	sb.append("\nFROM ");
-                sb.append("\"" + t.tableName + "\"").append(" ").append(t.alias);
-            } else {
-                sb.append("\n").append(t.joinType)
-                  .append(" ").append("\"" + t.tableName + "\"").append(" ").append(t.alias)
-                  .append(" ON ").append(t.joinOn);
+
+            if (!t.getField().isEmpty()) {
+                for (String f : t.getField().split(",")) {
+                    f = f.trim();
+
+                    // ตรวจ alias (AS xxx)
+                    String alias = null;
+                    int idx = f.toUpperCase().lastIndexOf(" AS ");
+                    if (idx > -1) {
+                        alias = f.substring(idx + 4).trim();
+                    }
+
+                    // ถ้ามี alias และเคยใช้แล้ว → ข้าม
+                    if (alias != null && usedAliases.contains(alias)) {
+                        continue;
+                    }
+
+                    if (alias != null) {
+                        usedAliases.add(alias);
+                    }
+
+                    if (select.length() > 7) select.append(", ");
+                    select.append(f);
+                }
             }
-            StringBuilder where = t.getWhere();
-            if (!where.isEmpty()) {
-              sb.append("\n" + where);
-          }
+
+            if (i == 0) {
+                from.append("\nFROM \"")
+                    .append(t.tableName)
+                    .append("\" ")
+                    .append(t.alias);
+            } else {
+                TableDef prev = tables.get(i - 1);
+
+                from.append("\n").append(t.joinType)
+                    .append(" \"").append(t.tableName).append("\" ").append(t.alias)
+                    .append(" ON ");
+
+                if (t.columns.contains(t.joinOn)) {
+                    from.append(prev.alias).append(".\"id\" = ")
+                        .append(t.alias).append(".\"").append(t.joinOn).append("\"");
+                } else {
+                    from.append(prev.alias).append(".\"").append(t.joinOn).append("\" = ")
+                        .append(t.alias).append(".\"id\"");
+                }
+            }
         }
 
+        /*
         // GROUP BY
         if (!groupList.isEmpty()) {
             sb.append("\nGROUP BY ").append(String.join(", ", groupList));
@@ -320,8 +362,10 @@ public class QBakery {
         // LIMIT / OFFSET
         if (limit != null) sb.append("\nLIMIT ").append(limit);
         if (offset != null) sb.append(" OFFSET ").append(offset);
-
-        return sb.toString();
+         */
+        
+        String sql = select.append(from).toString();
+        return sql;
     }
 
     // --- INSERT SQL ---

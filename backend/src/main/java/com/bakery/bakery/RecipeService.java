@@ -55,6 +55,7 @@ public class RecipeService implements ApiHandler {
         qb.addTable("Recipe").field("id recipeId, name recipeId_NAME, solnList, note");
         qb.addTable("RecipeLink").joinOn("recipeId").field("id linkId, recipeId, ingredientId, quantity, stepNo");
         qb.addTable("Ingredient").joinOn("ingredientId").field("id ingredientId, name ingredientId_NAME, unit");
+        qb.isDiag = true;
         List<Map<String, Object>> list = qb.listData();
 
         ResUtils.responseJsonResult(res, Map.of("status", "OK", "list", list));
