@@ -5,12 +5,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.bakery.bakery.util.ApiHandler;
-import com.bakery.bakery.util.ApiRegistry;
 import com.bakery.bakery.util.ReqUtils;
 import com.bakery.bakery.util.ResUtils;
 import com.bakery.bakery.util.SqlUtils;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -18,18 +16,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
+@Component("user")
 public class UserService implements ApiHandler {
 
-    @Autowired private ApiRegistry registry;
     @Autowired private BCryptPasswordEncoder passwordEncoder;
     @Autowired JwtService jwt;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-    @PostConstruct
-    public void init() {
-        registry.register("user", this);
-    }
 
     @Override
     public void handle(String action, HttpServletRequest req, HttpServletResponse res) {
@@ -181,7 +173,6 @@ public class UserService implements ApiHandler {
         int roleType = Integer.parseInt(params.getOrDefault("roleType", "0"));
         
         ResUtils.checkRequired(res, accId, "accId is required");
-        
         
         Map<String, Object> info = new HashMap<String, Object>();
         info.put("accId", accId);

@@ -1,30 +1,18 @@
 package com.bakery.bakery;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.bakery.bakery.util.ApiHandler;
-import com.bakery.bakery.util.ApiRegistry;
 import com.bakery.bakery.util.ReqUtils;
 import com.bakery.bakery.util.ResUtils;
-import com.bakery.bakery.util.SqlUtils;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.*;
 
-@Component
+@Component("test")
 public class TestService implements ApiHandler {
-
-    @Autowired
-    private ApiRegistry registry;
-
-    @PostConstruct
-    public void init() {
-        registry.register("test", this);
-    }
 
     @Override
     public void handle(String action, HttpServletRequest req, HttpServletResponse res) {

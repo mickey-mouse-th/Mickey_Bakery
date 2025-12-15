@@ -6,3 +6,4 @@ import jakarta.servlet.http.HttpServletResponse;
 public interface ApiHandler {
     void handle(String action, HttpServletRequest req, HttpServletResponse res);
 }
+
