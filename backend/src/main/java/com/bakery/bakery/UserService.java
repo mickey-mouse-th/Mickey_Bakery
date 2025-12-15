@@ -40,6 +40,7 @@ public class UserService implements ApiHandler {
             
             case "list": list(req, res); break;
             case "load": load(req, res); break;
+            case "changeRoleType": changeRoleType(req, res); break;
             default:  ResUtils.responseJsonResult(res, Map.of("error", "Unknown action: " + action));
         }
     }
@@ -172,6 +173,24 @@ public class UserService implements ApiHandler {
         List<Map<String, Object>> list = qb.listData();
 
         ResUtils.responseJsonResult(res, Map.of("status", "OK", "list", list));
+    }
+    
+    public void changeRoleType(HttpServletRequest req, HttpServletResponse res) {
+    	Map<String, String> params = ReqUtils.getAllParams(req);
+    	String accId = params.get("accId");
+        int roleType = Integer.parseInt(params.getOrDefault("roleType", "0"));
+        
+        ResUtils.checkRequired(res, accId, "accId is required");
+        
+        
+        Map<String, Object> info = new HashMap<String, Object>();
+        info.put("accId", accId);
+        info.put("roleType", roleType);
+        
+        SqlUtils sql = new SqlUtils();
+        sql.update("Account", info);
+        
+        ResUtils.responseJsonResult(res, Map.of("status", "OK"));
     }
 
 }
