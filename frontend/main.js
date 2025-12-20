@@ -223,6 +223,7 @@ var M = {
                 return;
             }
 
+            var refreshToken = refreshTokenItem.token || '';
             $.ajax({
                 method: 'POST',
                 url: '/bakery-api/user/getAccessToken',
@@ -252,12 +253,12 @@ var M = {
     });
     },
     
-    isTokenExpired: function(atok) {
-        if (!atok) return true;
-        if (!atok.expire) return true;
+    isTokenExpired: function(token) {
+        if (!token) return true;
+        if (!token.expire) return true;
     
         var now = Date.now();
-        return now > atok.expire;
+        return now > token.expire;
     },
 
     setItemStorage: function(key, data) {
