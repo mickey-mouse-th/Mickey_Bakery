@@ -209,26 +209,23 @@ var M = {
     
     getValidAccessToken: function() {
     return new Promise((resolve, reject) => {
-        resolve({});
-        return;
-        
         var user = M.getItemStorage('user')
         if (!user) {
             resolve(null);
             return;
         }
-
-        var accessTokenItem = M.getItemStorage('accessTokenItem');
+        
+        var accessTokenItem = user.accessTokenItem;
         if (!accessTokenItem || M.isTokenExpired(accessTokenItem)) {
-            var refreshToken = M.getItemStorage('refreshToken');
-            if (!refreshToken) {
+            var refreshTokenItem = user.refreshTokenItem;
+            if (!refreshTokenItem || M.isTokenExpired(refreshTokenItem)) {
                 reject({ logout: true });
                 return;
             }
 
             $.ajax({
                 method: 'POST',
-                url: '/api/refresh-token',
+                url: '/bakery-api/user/getAccessToken',
                 contentType: 'application/json',
                 data: JSON.stringify({ token: refreshToken }),
                 timeout: 5000,
@@ -239,36 +236,29 @@ var M = {
                         return;
                     }
 
-                    var expire_minute = ret.expire_minute || 15;
-                    accessTokenItem = {
-                        token: ret.token,
-                        expireTs: Date.now() + (expire_minute * 60 * 1000)
-                    };
-
-                    M.setItemStorage('accessTokenItem', accessTokenItem);
-                    resolve(accessTokenItem);
+                    user.accessTokenItem = ret.accessTokenItem;
+                    M.setItemStorage('user', user);
+                    resolve(user.accessTokenItem);
                 },
                 error: function(xhr, status, error) {
-                    reject({ xhr, status, error });
+                    console.log('xhr, status, error= ', { xhr, status, error });
+                    reject({ logout: true });
                 }
             });
 
             return;
         }
-
-        resolve(accessTokenItem); // <<< ส่ง object
+        resolve(accessTokenItem);
     });
     },
     
     isTokenExpired: function(atok) {
         if (!atok) return true;
-    
-        if (!atok.expireTs) return true;
+        if (!atok.expire) return true;
     
         var now = Date.now();
-        return now > atok.expireTs;
+        return now > atok.expire;
     },
-    
 
     setItemStorage: function(key, data) {
         var json = JSON.stringify(data);
