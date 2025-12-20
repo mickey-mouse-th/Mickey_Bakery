@@ -223,10 +223,11 @@ var M = {
                 return;
             }
 
+            var host = !!M.isDEV ? M.hostDebug : M.hostService;
             var refreshToken = refreshTokenItem.token || '';
             $.ajax({
                 method: 'POST',
-                url: '/bakery-api/user/getAccessToken',
+                url: host + '/bakery-api/user/getAccessToken',
                 contentType: 'application/json',
                 data: JSON.stringify({ token: refreshToken }),
                 timeout: 5000,
