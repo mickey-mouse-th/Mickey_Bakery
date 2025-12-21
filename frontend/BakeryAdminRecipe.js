@@ -10,11 +10,8 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
 		self.$scope = $scope || $('#none');
 		self.cb = cb;
 		log('init ..', self);
-		initPageControl();
-		// initFormControls();
-		// initCustomControls();
+		initFormControls();
 		// onInitDone();
-        load(); // TODO mmove
 		log('init DONE', this);
 	};
 
@@ -31,7 +28,7 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
 		onLoadDone();
 	};
 
-	var initPageControl = function() {
+	var initFormControls = function() {
 
         self.$list = self.$scope.find('.divItemList');
         self.$divItemNone = self.$scope.find('.divItemNone');
@@ -44,17 +41,23 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
 	};
 
     var doLoad = function() {
-        var list = []; // TODO list via server
-        onLoad(list);
+        M.callServer("GET", "bakery-api/recipe/list", {}).then(onLoad).catch(onLoadFail);
     };
 
-    var onLoad = function(list) {
-        if (!list.length) {
+    var onLoad = function(result) {
+        self.record = result;
+        if (result.status !== "OK") {
+			onLoadFail(result.reason);
+			return;
+		}
+        
+        var list = result.list || [];
+        if (list.length === 0) {
             self.$divItemNone.removeClass('hidden');
             return;
         }
+
         self.$list.removeClass('hidden');
-        
         var $HF = self.$list.find('.HF');
         var $HL = self.$list.find('.HL');
         var $HT = self.$list.find('.HT');
@@ -74,9 +77,13 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
     var onLoadDone = function() {
         log('onLoadDone ...');
         if (self.cbLoadDone) {
-          self.cbLoadDone.call(null);
+            self.cbLoadDone.call(null);
         }
-      };
+    };
+
+    var onLoadFail = function(err) {
+        log('onLoadFail err=', err);
+    };
 
     var log = function (data) {
         console.log(self.logPrefix, data);
