@@ -66,12 +66,12 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
             var $item = $HT.clone().removeClass('HT').addClass('HI');
             $item.attr('fid', item.id);
             $item.find('[data-fld="name"]').text(item.name || '');
-            $item.find('[data-fld="total-ingredient"]').text(item.ingredientUsages?.length || 0);
-            $item.find('[data-fld="total-step"]').text(item.steps?.length || 0);
+            $item.find('[data-fld="total-ingredient"]').text(item.count_I || 0);
+            $item.find('[data-fld="total-step"]').text(item.count_S || 0);
             $item.removeClass('hidden');
             $item.insertBefore($HL);
         }
-        
+
         onLoadDone();
     };
 
