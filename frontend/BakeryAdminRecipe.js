@@ -25,7 +25,6 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
 		self.$scope.find(':input.txtSearch').val("");
 
 		doLoad();
-		onLoadDone();
 	};
 
 	var initFormControls = function() {
@@ -72,6 +71,8 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
             $item.removeClass('hidden');
             $item.insertBefore($HL);
         }
+        
+        onLoadDone();
     };
 
     var onLoadDone = function() {
