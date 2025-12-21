@@ -1,461 +1,331 @@
 package com.bakery.bakery;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import com.bakery.bakery.util.DB;
 
-public class QBakery {
-    public class TableDef {
-        private String tableName;
-        private String alias;
-        private String joinType = "FROM";      // FROM / JOIN / LEFT / RIGHT
-        private String joinOn = null;
-        private String fieldStr = "";
-        private List<String> whereList = new ArrayList<>();
-        private StringBuilder whereClause = new StringBuilder();
-        private Map<String, String> fieldMap = new HashMap<String, String>();
-        Set<String> columns = new HashSet<>();
+class SelectExpr {
+    String sql;
+    SelectExpr(String sql) {
+        this.sql = sql;
+    }
+}
 
-        public TableDef(String tableName, String alias) {
-            this.tableName = tableName;
-            this.alias = alias;
-        }
-        
-        public TableDef filter(Map<String, String> filter) {
-        	String[] array = filter.entrySet().stream()
-        		    .map(entry -> entry.getKey() + "=" + entry.getValue())
-        		    .toArray(String[]::new);
-        	return filter(array);
-        }
-        
-        public TableDef filter(String... kv) {
-        	if (kv == null || kv.length % 2 != 0) {
-                throw new IllegalArgumentException("filter requires key/value pairs");
-            }
-        	
-            for (int i = 0; i < kv.length; i += 2) {
-                String col = kv[i].toString();
-                String val = kv[i + 1];
-                if (val == null || val.isEmpty()) continue;
-                String field = fieldMap.get(col);
-                if (field != null && !field.isEmpty()) {
-                	col = field;
-                }
-                appendWhere(alias + "." + col + " = ?");
-                params.add(val);
-                /*
-                if (col.endsWith(">")) {
-                	appendWhere(alias + "." + col.replace(">", "") + " > ?");
-                    params.add(val);
-                } else if (col.endsWith("<")) {
-                	appendWhere(alias + "." + col.replace("<", "") + " < ?");
-                    params.add(val);
-                } else if (col.toLowerCase().contains("between")) {
-                    String[] v = val.split(",");
-                    appendWhere(alias + "." + col.replace("between", "").trim() + " BETWEEN ? AND ?");
-                    params.add(v[0].trim());
-                    params.add(v[1].trim());
-                } else {
-                	appendWhere(alias + "." + col + " = ?");
-                    params.add(val);
-                }
-                */
-            }
-            return this;
-        }
-        public TableDef where(String sql, Object... values) {
-            appendWhere(sql);
-            params.addAll(Arrays.asList(values));
-            return this;
-        }
-        private void appendWhere(String s) {
-            if (whereClause.length() == 0) {
-                whereClause.append("WHERE ").append(s);
-            } else {
-                whereClause.append(" ").append(s);
-            }
-        }
-        public StringBuilder getWhere() {
-        	return whereClause;
-        }
+class QTable {
 
-        public TableDef field(String f) {
-        	List<String> fsArr = Arrays.asList(f.split(","));
-        	this.fieldStr = fsArr.stream()
-        	    .map(String::trim)
-        	    .filter(s -> !s.isEmpty())
-        	    .map(o -> {
-        	        List<String> fArr = Arrays.stream(o.split(" "))
-        	                                  .filter(s -> !s.isEmpty())
-        	                                  .collect(Collectors.toList());
-        	        String fieldFo = fArr.get(0);
-        	        String fieldTo = fArr.size() >=2 ? fArr.get(1) : "";
-        	        setFieldList(!fieldTo.isEmpty() ? fieldTo : fieldFo);
-        	        if (!fieldTo.isEmpty()) fieldMap.put(fieldTo, fieldFo);
-        	        return alias + "." + "\"" + fieldFo + "\"" + (!fieldTo.isEmpty() ? (" AS " + "\"" + fieldTo + "\"") : "");
-        	    })
-        	    .collect(Collectors.joining(","));
-        	
-        	 for (String part : f.split(",")) {
-    	        String col = part.trim().split(" ")[0];
-    	        columns.add(col);
-    	    }
-            return this;
-        }
-        public String getField() {
-        	return fieldStr;
-        }
-        
-        public List<String> getWhereList() {
-        	return whereList;
-        }
-        public List<Object> getParams() {
-        	return params;
-        }
+    String tableName;
+    String alias;
 
-        public TableDef joinOn(String condition) {
-            this.joinType = "JOIN";
-            this.joinOn = condition;
-            return this;
-        }
+    String joinFkField;
+    String joinPkField = "id";
 
-        public TableDef leftJoinOn(String condition) {
-            this.joinType = "LEFT JOIN";
-            this.joinOn = condition;
-            return this;
-        }
+    String lastIdField;
+    String sortField;
+    boolean sortDesc;
 
-        public TableDef rightJoinOn(String condition) {
-            this.joinType = "RIGHT JOIN";
-            this.joinOn = condition;
-            return this;
-        }
-        
-//        public String getFields() {
-//        	String tableName2 = tableName;
-//        	for (int i=0; i<fields.size(); i++) {
-//        		String field = fields.get(i);
-//        		
-//        	}
-//        	return "";
-//        }
+    List<String> fields = new ArrayList<>();
+    Map<String, Object> filters = new LinkedHashMap<>();
+    List<SelectExpr> aggregates = new ArrayList<>();
+    List<Count> countList = new ArrayList<>();
+
+    QTable(String tableName, int index) {
+        this.tableName = tableName;
+        this.alias = "t" + index;
     }
 
-    // --- Core Fields ---
+    public QTable joinOn(String fkField) {
+        this.joinFkField = fkField;
+        return this;
+    }
+
+    public QTable field(String expr) {
+        fields.addAll(Arrays.stream(expr.split(","))
+                .map(String::trim).toList());
+        return this;
+    }
+
+    public QTable sort(String field) {
+        this.sortField = field;
+        this.sortDesc = false;
+        return this;
+    }
+
+    public QTable sortD(String field) {
+        this.sortField = field;
+        this.sortDesc = true;
+        return this;
+    }
+
+    public QTable lastIdField(String field) {
+        this.lastIdField = field;
+        return this;
+    }
+
+    public QTable filter(Object... kv) {
+        if (kv.length % 2 != 0) {
+            throw new IllegalArgumentException("filter ต้องเป็นคู่ field, value");
+        }
+        for (int i = 0; i < kv.length; i += 2) {
+            filters.put((String) kv[i], kv[i + 1]);
+        }
+        return this;
+    }
+
+    public QTable filter(Map<String, Object> map) {
+        filters.putAll(map);
+        return this;
+    }
+
+    static class Count {
+        String field;
+        String prefix;
+        List<Object> values;
+
+        Count(String field, String prefix, List<Object> values) {
+            this.field = field;
+            this.prefix = prefix;
+            this.values = values;
+        }
+    }
+
+    public QTable count(String field, String prefix) {
+        List<Object> vals = fetchDistinctValues(field);
+        countList.add(new Count(field, prefix, vals));
+        return this;
+    }
+
+    private List<Object> fetchDistinctValues(String field) {
+        List<Object> list = new ArrayList<>();
+        String sql = "SELECT DISTINCT \"" + field + "\" FROM \"" + tableName + "\"";
+
+        try (Connection conn = DB.getConnection(); PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                list.add(rs.getObject(1));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
+
+    List<String> buildSelect(List<Object> params) {
+        List<String> list = new ArrayList<>();
+
+        for (SelectExpr e : aggregates) {
+            list.add(e.sql);
+        }
+
+        for (Count c : countList) {
+            String col = alias + ".\"" + c.field + "\"";
+
+            for (Object v : c.values) {
+                list.add(
+                    "COUNT(CASE WHEN " + col + " = ? THEN 1 END) AS \"" +
+                    c.prefix + "_" + v + "\""
+                );
+                params.add(v);
+            }
+        }
+
+        for (String f : fields) {
+            String[] s = f.split("\\s+");
+            if (s.length == 1)
+                list.add(alias + ".\"" + s[0] + "\"");
+            else
+                list.add(alias + ".\"" + s[0] + "\" AS \"" + s[1] + "\"");
+        }
+
+        return list;
+    }
+
+    String buildJoin(QTable prev) {
+        if (prev == null) {
+            return "FROM \"" + tableName + "\" " + alias;
+        }
+        return "JOIN \"" + tableName + "\" " + alias +
+               " ON " + prev.alias + ".\"" + joinPkField + "\" = " +
+               alias + ".\"" + joinFkField + "\"";
+    }
+}
+
+public class QBakery {
+
+    private final List<QTable> tables = new ArrayList<>();
+    private final List<Object> params = new ArrayList<>();
+    private final List<String> groupBy = new ArrayList<>();
+
+    private Integer limit;
+    private Object lastId;
+
     public boolean isDiag = false;
-    List<TableDef> tables = new ArrayList<>();
-//    List<String> whereList = new ArrayList<>();
-    private List<Object> params = new ArrayList<>();
-    List<String> orderList = new ArrayList<>();
-    List<String> groupList = new ArrayList<>();
-    List<String> havingList = new ArrayList<>();
-    List<String> selectedFields = new ArrayList<>();
-    private List<String> fieldList = new ArrayList<>();
 
-    Integer limit = null;
-    Integer offset = null;
-
-    // --- INSERT / UPDATE / DELETE ---
-    Map<String, Object> insertValues = new LinkedHashMap<>();
-    Map<String, Object> updateValues = new LinkedHashMap<>();
-    String targetTable = null;
-    String command = "SELECT";  // SELECT / INSERT / UPDATE / DELETE
-    private final Set<String> usedAliases = new HashSet<>();
-
-    public TableDef addTable(String tableName) {
-        String alias = "t" + (tables.size() + 1);
-        TableDef t = new TableDef(tableName, alias);
+    public QTable addTable(String tableName) {
+        QTable t = new QTable(tableName, tables.size() + 1);
         tables.add(t);
         return t;
     }
 
-    public QBakery setFields(String fieldsCommaSeparated) {
-        if (fieldsCommaSeparated == null) return this;
-
-        String[] parts = fieldsCommaSeparated.split(",");
-        for (String p : parts) {
-            String f = p.trim();
-            if (!f.isEmpty()) {
-                selectedFields.add(f);
-            }
-        }
+    public QBakery limit(int n) {
+        this.limit = n;
         return this;
     }
 
-    public QBakery where(String condition, Object... ps) {
-//        whereList.add("(" + condition + ")");
-//        params.addAll(Arrays.asList(ps));
+    public QBakery lastId(Object id) {
+        this.lastId = id;
         return this;
     }
 
-    public QBakery orWhere(String condition, Object... ps) {
-//        if (whereList.isEmpty()) {
-//            return where(condition, ps);
-//        }
-//        whereList.add("OR (" + condition + ")");
-//        params.addAll(Arrays.asList(ps));
+    public QBakery groupBy(String... fields) {
+        groupBy.addAll(Arrays.asList(fields));
         return this;
     }
 
-    public QBakery groupBy(String field) {
-        groupList.add(field);
-        return this;
-    }
+    public List<Map<String, Object>> listData() {
+        String sql = buildSQL();
 
-    public QBakery having(String condition) {
-        havingList.add(condition);
-        return this;
-    }
-
-    public QBakery orderBy(String field, boolean asc) {
-        orderList.add(field + (asc ? " ASC" : " DESC"));
-        return this;
-    }
-
-    public QBakery limit(int l) {
-        this.limit = l;
-        return this;
-    }
-
-    public QBakery offset(int o) {
-        this.offset = o;
-        return this;
-    }
-
-    public QBakery loadMore(String idField, Object lastId) {
-        where(idField + " > ?", lastId);
-        return this;
-    }
-
-    public QBakery insertInto(String table) {
-        this.command = "INSERT";
-        this.targetTable = table;
-        return this;
-    }
-
-    public QBakery value(Map<String, Object> values) {
-        insertValues.putAll(values);
-        return this;
-    }
-
-    public QBakery update(String table) {
-        this.command = "UPDATE";
-        this.targetTable = table;
-        return this;
-    }
-
-    public QBakery set(String col, Object val) {
-        updateValues.put(col, val);
-        return this;
-    }
-
-    private void setFieldList(String field) {
-    	if (!fieldList.contains(field)) {
-    		fieldList.add(field);
-    	}
-    }
-    private List<String> getFieldList() {
-    	return fieldList;
-    }
-    
-    public QBakery deleteFrom(String table) {
-        this.command = "DELETE";
-        this.targetTable = table;
-        return this;
-    }
-
-    public String buildSQL() {
-        switch (command) {
-
-//            case "INSERT":
-//                return buildInsert();
-//
-//            case "UPDATE":
-//                return buildUpdate();
-//
-//            case "DELETE":
-//                return buildDelete();
-
-            default:
-                return buildSelect();
-        }
-    }
-
-    // --- SELECT ---
-    private String buildSelect() {
-        StringBuilder select = new StringBuilder("SELECT ");
-        StringBuilder from   = new StringBuilder();
-        usedAliases.clear();
-        
-        for (int i = 0; i < tables.size(); i++) {
-            TableDef t = tables.get(i);
-
-            if (!t.getField().isEmpty()) {
-                for (String f : t.getField().split(",")) {
-                    f = f.trim();
-
-                    // ตรวจ alias (AS xxx)
-                    String alias = null;
-                    int idx = f.toUpperCase().lastIndexOf(" AS ");
-                    if (idx > -1) {
-                        alias = f.substring(idx + 4).trim();
-                    }
-
-                    // ถ้ามี alias และเคยใช้แล้ว → ข้าม
-                    if (alias != null && usedAliases.contains(alias)) {
-                        continue;
-                    }
-
-                    if (alias != null) {
-                        usedAliases.add(alias);
-                    }
-
-                    if (select.length() > 7) select.append(", ");
-                    select.append(f);
-                }
-            }
-
-            if (i == 0) {
-                from.append("\nFROM \"")
-                    .append(t.tableName)
-                    .append("\" ")
-                    .append(t.alias);
-            } else {
-                TableDef prev = tables.get(i - 1);
-
-                from.append("\n").append(t.joinType)
-                    .append(" \"").append(t.tableName).append("\" ").append(t.alias)
-                    .append(" ON ");
-
-                if (t.columns.contains(t.joinOn)) {
-                    from.append(prev.alias).append(".\"id\" = ")
-                        .append(t.alias).append(".\"").append(t.joinOn).append("\"");
-                } else {
-                    from.append(prev.alias).append(".\"").append(t.joinOn).append("\" = ")
-                        .append(t.alias).append(".\"id\"");
-                }
-            }
-        }
-
-        /*
-        // GROUP BY
-        if (!groupList.isEmpty()) {
-            sb.append("\nGROUP BY ").append(String.join(", ", groupList));
-        }
-
-        // HAVING
-        if (!havingList.isEmpty()) {
-            sb.append("\nHAVING ").append(String.join(" AND ", havingList));
-        }
-
-        // ORDER BY
-        if (!orderList.isEmpty()) {
-            sb.append("\nORDER BY ").append(String.join(", ", orderList));
-        }
-
-        // LIMIT / OFFSET
-        if (limit != null) sb.append("\nLIMIT ").append(limit);
-        if (offset != null) sb.append(" OFFSET ").append(offset);
-         */
-        
-        String sql = select.append(from).toString();
-        return sql;
-    }
-
-    // --- INSERT SQL ---
-    private String buildInsert() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO ").append(targetTable).append(" (");
-
-        sb.append(String.join(", ", insertValues.keySet()));
-        sb.append(")\nVALUES (");
-
-        String q = String.join(", ", Collections.nCopies(insertValues.size(), "?"));
-        sb.append(q).append(")");
-
-        params.clear();
-        params.addAll(insertValues.values());
-
-        return sb.toString();
-    }
-//
-//    // --- UPDATE SQL ---
-//    private String buildUpdate() {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("UPDATE ").append(targetTable).append("\nSET ");
-//
-//        List<String> sets = new ArrayList<>();
-//        for (String c : updateValues.keySet()) {
-//            sets.add(c + " = ?");
-//        }
-//        sb.append(String.join(", ", sets));
-//
-//        params.clear();
-//        params.addAll(updateValues.values());
-//
-//        if (!whereList.isEmpty()) {
-//            sb.append("\nWHERE ").append(String.join(" AND ", whereList));
-//        }
-//
-//        return sb.toString();
-//    }
-//
-//    // --- DELETE SQL ---
-//    private String buildDelete() {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("DELETE FROM ").append(targetTable);
-//
-//        if (!whereList.isEmpty()) {
-//            sb.append("\nWHERE ").append(String.join(" AND ", whereList));
-//        }
-//
-//        return sb.toString();
-//    }
-//    
-    public List<Map<String,Object>> listData() {
-        List<Map<String,Object>> result = new ArrayList<>();
-
-        String sql = buildSelect();
         if (isDiag) {
-        	 System.out.println("Executing SQL:\n" + sql); // debug
+            System.out.println("Executing SQL:\n" + sql);
+            System.out.println("Params: " + params);
         }
 
-        try (Connection conn = DB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        List<Map<String, Object>> result = new ArrayList<>();
 
-            // bind params
-            List<Object> ps = getParams();
-            for (int i = 0; i < ps.size(); i++) {
-                stmt.setObject(i + 1, ps.get(i));
+        try (Connection conn = DB.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
             }
 
-            // execute query
             try (ResultSet rs = stmt.executeQuery()) {
                 ResultSetMetaData meta = rs.getMetaData();
                 int colCount = meta.getColumnCount();
+
                 while (rs.next()) {
-                    Map<String,Object> row = new LinkedHashMap<>();
+                    Map<String, Object> row = new LinkedHashMap<>();
                     for (int i = 1; i <= colCount; i++) {
                         row.put(meta.getColumnLabel(i), rs.getObject(i));
                     }
                     result.add(row);
                 }
             }
+
         } catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            throw new RuntimeException(e);
+        }
 
         return result;
     }
-    
-    public List<Object> getParams() {
-    	return params;
+
+    private String buildSQL() {
+
+        params.clear();
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("SELECT ")
+          .append(tables.stream()
+                .flatMap(t -> t.buildSelect(params).stream())
+                .collect(Collectors.joining(", ")));
+
+        for (int i = 0; i < tables.size(); i++) {
+            sb.append("\n")
+              .append(tables.get(i)
+                .buildJoin(i == 0 ? null : tables.get(i - 1)));
+        }
+
+        List<String> wheres = new ArrayList<>();
+
+        if (lastId != null && tables.get(0).lastIdField != null) {
+            wheres.add(tables.get(0).alias + ".\"" +
+                       tables.get(0).lastIdField + "\" > ?");
+            params.add(lastId);
+        }
+
+        for (QTable t : tables) {
+            for (var e : t.filters.entrySet()) {
+                wheres.add(parseFilter(t.alias, e.getKey(), e.getValue()));
+            }
+        }
+
+        if (!wheres.isEmpty()) {
+            sb.append("\nWHERE ").append(String.join(" AND ", wheres));
+        }
+
+        if (!groupBy.isEmpty()) {
+            sb.append("\nGROUP BY ");
+            sb.append(groupBy.stream()
+                .map(this::resolveGroupByField)
+                .collect(Collectors.joining(", ")));
+        }
+
+        List<String> orders = tables.stream()
+            .filter(t -> t.sortField != null)
+            .map(t -> t.alias + ".\"" + t.sortField + "\"" +
+                    (t.sortDesc ? " desc" : ""))
+            .toList();
+
+        if (!orders.isEmpty()) {
+            sb.append("\nORDER BY ").append(String.join(", ", orders));
+        }
+
+        if (limit != null) {
+            sb.append("\nLIMIT ").append(limit);
+        }
+
+        return sb.toString();
+    }
+
+    private String resolveGroupByField(String name) {
+        for (QTable t : tables) {
+            for (String f : t.fields) {
+                String[] s = f.split("\\s+");
+                if (s.length == 2) {
+                    String col = s[0];
+                    String alias = s[1];
+                    if (alias.equals(name)) {
+                        return t.alias + ".\"" + col + "\"";
+                    }
+                }
+            }
+        }
+
+        for (QTable t : tables) {
+            for (String f : t.fields) {
+                String col = f.split("\\s+")[0];
+                if (col.equals(name)) {
+                    return t.alias + ".\"" + col + "\"";
+                }
+            }
+        }
+
+        throw new IllegalArgumentException(
+            "groupBy field not found (alias or column): " + name
+        );
+    }
+
+    private String parseFilter(String alias, String field, Object expr) {
+
+        if (expr instanceof String s) {
+
+            if (s.startsWith("IN!")) {
+                String[] vals = s.substring(3).split(",");
+                params.addAll(Arrays.asList(vals));
+                return alias + ".\"" + field + "\" IN (" +
+                        String.join(",", Collections.nCopies(vals.length, "?")) + ")";
+            }
+
+            if (s.startsWith("LK!*")) {
+                String v = s.substring(4);
+                params.add("%" + v + "%");
+                String realField = field.replace("_NAME", "name");
+                return alias + ".\"" + realField + "\" LIKE ?";
+            }
+        }
+
+        params.add(expr);
+        return alias + ".\"" + field + "\" = ?";
     }
 }
