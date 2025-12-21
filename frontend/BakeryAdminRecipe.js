@@ -64,8 +64,8 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
         for (var i=0; i<list.length; i++) {
             var item = list[i];
             var $item = $HT.clone().removeClass('HT').addClass('HI');
-            $item.attr('fid', item.id);
-            $item.find('[data-fld="name"]').text(item.name || '');
+            $item.attr('fid', item.recipeId);
+            $item.find('[data-fld="name"]').text(item.recipeId_NAME || '');
             $item.find('[data-fld="total-ingredient"]').text(item.count_I || 0);
             $item.find('[data-fld="total-step"]').text(item.count_S || 0);
             $item.removeClass('hidden');
