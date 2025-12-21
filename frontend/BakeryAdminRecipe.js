@@ -50,6 +50,7 @@ window.bakery.BakeryAdminRecipe.prototype = function() {
 			return;
 		}
         
+        self.$list.find('.HI').remove();
         var list = result.list || [];
         if (list.length === 0) {
             self.$divItemNone.removeClass('hidden');
