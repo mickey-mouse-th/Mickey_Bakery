@@ -173,7 +173,7 @@ var M = {
             var host = !!M.isDEV ? M.hostDebug : M.hostService;
             var url = host + '/' + path;
 
-            var timeout = 5000;
+            var timeout = 10000;
             if (data._timeout) {
                 timeout = data._timeout;
                 delete data._timeout;
