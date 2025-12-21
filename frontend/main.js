@@ -101,7 +101,7 @@ var M = {
     
     loadPage: function(page) {
         var $divMainPage = M.$portal.find('.divMainPage');
-        $divMainPage.children('[data-page]').hide();
+        $divMainPage.children('[data-page]').addClass('hidden');
     
         var $exist = $divMainPage.children('[data-page="' + page + '"]');
     
@@ -109,7 +109,7 @@ var M = {
         if ($exist.length > 0) {
             var ctx0 = $exist.data('ctx');
             if (ctx0.load) ctx0.load({}, M.hideLoader);
-            $exist.show();
+            $exist.removeClass('hidden');
             return;
         }
     
