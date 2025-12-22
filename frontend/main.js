@@ -47,6 +47,18 @@ var M = {
           setTimeout(() => drawer.addClass("hidden"), 300);
           backdrop.addClass("hidden");
         });
+
+        M.$portal.on('click', '.HI[data-form="admin-recipe"][fid] .btnEdit', function() {
+            var $btn = $(this);
+            var $HI = $btn.closest('.HI');
+            var form = $HI.attr('data-form');
+            var fid = $HI.attr('fid');
+            if (!form || !fid) {
+                console.log('cannot find form or fid: form/fid=' + form + '/' + fid);
+                return;
+            }
+            location.hash = '#/' + M.mode + '/form:' + form + '/fid:' + fid;
+        });
     },
 
     // TODO เข้า link ตรงได้อยู่
@@ -86,20 +98,20 @@ var M = {
     },
 
 
-    goPageLink: function() {
+    goPageLink: function(menu, info) {
         var user = M.getItemStorage('user');
         if (!!user) {
             M.$portal.find('.divHeader:not([data-mode="' + M.mode + '"]').remove();
             M.$portal.find('.divHeader').removeClass('hidden');
         }
 
-        var menu = M.main || '';
+        menu = menu || M.main || '';
         var map  = M.MENU[M.mode] || {};
         var page = map.page[menu] || map.form[menu] || map.default;
-        M.loadPage(page);
+        M.loadPage(page, info);
     },
     
-    loadPage: function(page) {
+    loadPage: function(page, info) {
         var $divMainPage = M.$portal.find('.divMainPage');
         $divMainPage.children('[data-page]').addClass('hidden');
     
@@ -108,7 +120,7 @@ var M = {
         M.showLoader();
         if ($exist.length > 0) {
             var ctx0 = $exist.data('ctx');
-            if (ctx0.load) ctx0.load({}, M.hideLoader);
+            if (ctx0.load) ctx0.load(info, M.hideLoader);
             $exist.removeClass('hidden');
             return;
         }
@@ -120,7 +132,7 @@ var M = {
                     $item.data('ctx', ctx);
     
                     if (ctx.init) ctx.init($item);
-                    if (ctx.load) ctx.load({}, M.hideLoader);
+                    if (ctx.load) ctx.load(info, M.hideLoader);
                 }
             });
         });
