@@ -48,7 +48,7 @@ var M = {
           backdrop.addClass("hidden");
         });
 
-        M.$portal.on('click', '.HI[data-form="admin-recipe"][fid] .btnEdit', function() {
+        M.$portal.on('click', '.HI[data-form][fid] .btnEdit', function() {
             var $btn = $(this);
             var $HI = $btn.closest('.HI');
             var form = $HI.attr('data-form');
