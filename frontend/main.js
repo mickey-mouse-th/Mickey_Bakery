@@ -132,7 +132,7 @@ var M = {
             type: "GET",
             success: function(data) {
                 var $divMainPage = $('.divMainPage');
-                var $HL = $divMainPage.find('.HL');
+                var $HL = $divMainPage.children('.HL');
     
                 var $item = $(data).attr('data-page', page);
                 $item.insertBefore($HL);
