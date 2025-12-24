@@ -159,10 +159,12 @@ BakeryUser.prototype.onLoadDone = function() {
 };
 
 BakeryUser.prototype.log = function (data) {
+	var form = this;
 	console.log(form.logPrefix, data);
 };
 
 BakeryUser.prototype.about = function() {
-	log('about call');
+	var form = this;
+	form.log('about call');
 };
 //# sourceURL=BakeryUser.js
