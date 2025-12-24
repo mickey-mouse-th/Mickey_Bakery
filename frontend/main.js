@@ -177,45 +177,35 @@ var M = {
             return;
         }
 
-        M.getValidAccessToken()
-        .then((atok) => {
+        var host = !!M.isDEV ? M.hostDebug : M.hostService;
+        var url = host + '/' + path;
 
-            var tokenStr = atok ? atok.token : '';
+        var timeout = 10000;
+        if (data._timeout) {
+            timeout = data._timeout;
+            delete data._timeout;
+        }
 
-            var host = !!M.isDEV ? M.hostDebug : M.hostService;
-            var url = host + '/' + path;
-
-            var timeout = 10000;
-            if (data._timeout) {
-                timeout = data._timeout;
-                delete data._timeout;
+        var option = {
+            method: method,
+            url: url,
+            timeout: timeout,
+            success: function(ret) {
+                resolve(ret);
+            },
+            error: function(xhr, status, error) {
+                reject({ xhr, status, error });
             }
+        };
 
-            var option = {
-                method: method,
-                url: url,
-                timeout: timeout,
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader('Authorization', 'Bearer ' + tokenStr);
-                },
-                success: function(ret) {
-                    resolve(ret);
-                },
-                error: function(xhr, status, error) {
-                    reject({ xhr, status, error });
-                }
-            };
+        if (method === 'POST' || method === 'PUT') {
+            option.data = JSON.stringify(data);
+            option.contentType = 'application/json';
+        } else {
+            option.data = data;
+        }
 
-            if (method === 'POST' || method === 'PUT') {
-                option.data = JSON.stringify(data);
-                option.contentType = 'application/json';
-            } else {
-                option.data = data;
-            }
-
-            $.ajax(option);
-        })
-        .catch(reject);
+        $.ajax(option);
     });
     },
     
