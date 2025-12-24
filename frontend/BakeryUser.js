@@ -68,6 +68,8 @@ BakeryUser.prototype.initPageControl = function() {
 					return;
 				}
 	
+				form.user = crypto.randomUUID();
+				ret.user.user = form.user;
 				M.setItemStorage('user', ret.user);
 				
 				if (form.cbLoadBack) {
