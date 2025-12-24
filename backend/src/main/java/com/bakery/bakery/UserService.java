@@ -1,6 +1,5 @@
 package com.bakery.bakery;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -9,19 +8,17 @@ import com.bakery.bakery.util.ReqUtils;
 import com.bakery.bakery.util.ResUtils;
 import com.bakery.bakery.util.SqlUtils;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component("user")
 public class UserService implements ApiHandler {
 
-    @Autowired private BCryptPasswordEncoder passwordEncoder;
-    @Autowired JwtService jwt;
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override
@@ -35,8 +32,6 @@ public class UserService implements ApiHandler {
             case "load": load(req, res); break;
             case "changeRoleType": changeRoleType(req, res); break;
             
-            case "verifyAccess": verifyAccess(req, res); break;
-            case "getAccessToken": getAccessToken(req, res); break;
             default:  ResUtils.responseJsonResult(res, Map.of("error", "Unknown action: " + action));
         }
     }
@@ -60,7 +55,7 @@ public class UserService implements ApiHandler {
         	ResUtils.responseJsonResult(res, Map.of("status", "NO", "reason", "User already exists"));
         	return;
         }
-        
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String passwordHash = passwordEncoder.encode(password);
         Map<String, Object> info = new HashMap<String, Object>();
         info.put("name", name);
@@ -96,7 +91,6 @@ public class UserService implements ApiHandler {
         	ResUtils.responseJsonResult(res, 401, Map.of("status", "NO", "reason", "Invalid credentials"));
         	return;
         }
-        
         list0.remove("passwordHash");
         
         Long accId = (Long) list0.get("accId");
@@ -104,55 +98,34 @@ public class UserService implements ApiHandler {
         String deviceName = params.get("deviceName");
         String deviceOS = params.get("deviceOS");
         
-        // atok
-        Map<String, Object> accesstoken_info = new HashMap<String, Object>();
-        accesstoken_info.put("accId", accId);
-        String accessToken = jwt.generateAccess(accesstoken_info);
-        Claims parseAccess = jwt.parseAccess(accessToken);
-        accesstoken_info = Map.of("token", accessToken, "expire", parseAccess.getExpiration());
-        list0.put("accessTokenItem", accesstoken_info);
+        HttpSession session = req.getSession(true);
+        session.setAttribute("accId", accId);
+        session.setAttribute("deviceId", deviceId);
+        session.setAttribute("deviceName", deviceName);
+        session.setAttribute("deviceOS", deviceOS);
         
-        // rtok => TODO
-        /*
-        qb = new QBakery();
-        qb.addTable("refreshTokenItem").filter(Map.of("accId", accId, "deviceId", deviceId)).field("id accId, deviceId, token, expTs");
-        List<Map<String, Object>> rtokList = qb.listData();
-        for (Map<String, Object> rtokItem: rtokList) {
-        	
-        }
-        */
-        
-        Map<String, Object> refreshtoken_info = new HashMap<String, Object>();
-        refreshtoken_info.put("accId", accId);
-        refreshtoken_info.put("deviceId", deviceId);
-        String refreshToken = jwt.generateRefresh(refreshtoken_info);
-        Claims parseRefresh = jwt.parseRefresh(refreshToken);
-        refreshtoken_info = Map.of("token", refreshToken, "expire", parseRefresh.getExpiration());
-        list0.put("refreshTokenItem", refreshtoken_info);
-        
-        Map<String, Object> info = Map.of(
-        		"token", refreshToken, "accId", accId, "deviceId", deviceId,
-        		"deviceName", deviceName, "deviceOS", deviceOS, "expTs", LocalDateTime.now().plusDays(7));
+        Map<String, Object> loginInfo = Map.of("accId", accId, "deviceId", deviceId, "loginDate", OffsetDateTime.now());
         SqlUtils sql = new SqlUtils();
-        sql.insert("RefreshToken", info);
+        sql.insert("loginHistory", loginInfo);
         
         ResUtils.responseJsonResult(res, Map.of("status", "OK", "user", list0));
     }
 
     public void logout(HttpServletRequest req, HttpServletResponse res) {
-    	Map<String, String> params = ReqUtils.getAllParams(req);
-        
-        String accId = params.get("accId");
-        String deviceId = params.get("deviceId");
-        
-        QBakery qb = new QBakery();
-        qb.addTable("RefreshToken").filter("accId", accId, "deviceId", deviceId).field("id, accId, deviceId");
-        List<Map<String, Object>> list = qb.listData();
-        
-        List<Object> ids = list.stream().map(o -> o.get("id")).collect(Collectors.toList());
-        
-        SqlUtils sql = new SqlUtils();
-        sql.deleteList("RefreshToken", ids);
+    	HttpSession session = req.getSession(false);
+        if (session != null) {
+        	Long accId = (Long) session.getAttribute("accId");
+        	String deviceId = (String) session.getAttribute("deviceId");
+            session.invalidate();
+            
+            QBakery qb = new QBakery();
+            qb.addTable("loginHistory").filter("id", accId, "deviceId", deviceId).field("id, deviceId");
+            List<Map<String, Object>> loginHistoryList = qb.listData();
+            loginHistoryList.stream().forEach(o -> o.put("logoutDate", OffsetDateTime.now()));
+            
+            SqlUtils sql = new SqlUtils();
+            sql.updateList("loginHistory", loginHistoryList);
+        }
         
         ResUtils.responseJsonResult(res, Map.of("status", "OK"));
     }
@@ -195,7 +168,7 @@ public class UserService implements ApiHandler {
         ResUtils.checkRequired(res, accId, "accId is required");
         
         Map<String, Object> info = new HashMap<String, Object>();
-        info.put("accId", accId);
+        info.put("id", accId);
         info.put("roleType", roleType);
         
         SqlUtils sql = new SqlUtils();
@@ -203,28 +176,5 @@ public class UserService implements ApiHandler {
         
         ResUtils.responseJsonResult(res, Map.of("status", "OK"));
     }
-    
-    public void verifyAccess(HttpServletRequest req, HttpServletResponse res) {
-    	Map<String, String> params = ReqUtils.getAllParams(req);
-    	String accId = params.get("accId");
-    	//JwtService.verifyAccess();
-        ResUtils.responseJsonResult(res, Map.of("status", "OK"));
-    }
-    
-    public void getAccessToken(HttpServletRequest req, HttpServletResponse res) {
-    	Map<String, String> params = ReqUtils.getAllParams(req);
-    	String rtok = params.get("token");
-    	Claims refreshItem = jwt.parseRefresh(rtok);
-    	
-    	Integer accId = (Integer) refreshItem.get("accId");
-        Map<String, Object> accesstoken_info = new HashMap<String, Object>();
-        accesstoken_info.put("accId", accId);
-        String accessToken = jwt.generateAccess(accesstoken_info);
-        Claims parseAccess = jwt.parseAccess(accessToken);
-        accesstoken_info = Map.of("token", accessToken, "expire", parseAccess.getExpiration());
-    	
-        ResUtils.responseJsonResult(res, Map.of("status", "OK", "accessTokenItem", accesstoken_info));
-    }
-
 }
 
