@@ -3,14 +3,14 @@ var BakeryUser = function($scope) {
 	this.$scope = $scope || $('#none');
 };
 
-BakeryUser.prototype.init = function (cb) {
+BakeryUser.prototype.init = function (cbInitDone) {
 	var form = this;
-	form.cb = cb;
+	form.cbInitDone = cbInitDone;
 	form.log('init ..', form);
 	form.initPageControl();
 	// initFormControls();
 	// initCustomControls();
-	// onInitDone();
+	form.onInitDone();
 	form.log('init DONE', this);
 };
 
@@ -149,6 +149,14 @@ BakeryUser.prototype.doLoginUser = function(info, cbLoadDone, cbLoadBack) {
 	form.cbLoadBack = cbLoadBack;
 
 	form.onLoadDone();
+};
+
+BakeryUser.prototype.onInitDone = function() {
+	var form = this;
+	if (form.cbInitDone) {
+		form.cbInitDone.call(null);
+		form.cbInitDone = null;
+	}
 };
 
 BakeryUser.prototype.onLoadDone = function() {
