@@ -14,18 +14,12 @@ var M = {
     hostService: 'https://bakery-backend-mzwv.onrender.com',
     hostDebug: 'http://localhost:8080',
 
+    isClearMenu: false,
+
     init: function() {
         M.initMENU();
+        M.initUser();
 
-        if (!M.requireLogin()) {
-            M.goPageLink();
-        }
-
-        window.onhashchange = function(e) {
-            if (!M.requireLogin()) {
-                M.goPageLink();
-            }
-        }
         M.$portal.on('click', '.btnLogout', function() {
             M.clearStorage();
             window.location.href = '';
@@ -59,6 +53,13 @@ var M = {
             }
             location.hash = '#/' + M.mode + '/form:' + form + '/fid:' + fid;
         });
+    },
+
+    initUser: function(cb) {
+        M.ctBakeryUser = new window['bakery']['BakeryUser'](M.$portal);
+		M.ctBakeryUser.init(function() {
+			if (cb) cb.call(null, M.user);
+		});
     },
 
     // TODO เข้า link ตรงได้อยู่
@@ -98,17 +99,47 @@ var M = {
     },
 
 
-    goPageLink: function(menu, info) {
-        var user = M.getItemStorage('user');
-        if (!!user) {
-            M.$portal.find('.divHeader:not([data-mode="' + M.mode + '"]').remove();
-            M.$portal.find('.divHeader').removeClass('hidden');
+    goPageLink: function(link, item) {
+        var mode = M.mode || "user";
+        var menu = link.split('/')[0] || M.main || '';
+		var more = link.split('/').slice(1).join('/');
+        
+        if (M.ctBakeryUser) {
+            if (M.ctBakeryUser.user) {
+                // authen OK
+                if (!M.isClearMenu) {
+                    M.$portal.find('.divHeader:not([data-mode="' + M.mode + '"]').remove();
+                    M.$portal.find('.divHeader').removeClass('hidden');
+                    M.isClearMenu = true;
+                }
+            } else {
+                M.goLoginUser(link, menu);
+                return;
+            }
         }
-
-        menu = menu || M.main || '';
-        var map  = M.MENU[M.mode] || {};
+        
+        var map  = M.MENU[mode] || {};
         var page = map.page[menu] || map.form[menu] || map.default;
+
+        var info = {
+            type: 'link', 
+            link: more,
+            item: item
+        }
         M.loadPage(page, info);
+    },
+
+    goLoginUser: function(link, menu) {
+        M.$portal.find('.divLoginPage').removeClass('hidden');
+        M.ctBakeryUser.doLoginUser({link: link, menu: menu}, function() {
+            console.log('goLoginUser cbLoadDone ...');
+        }, function(info) {
+            console.log('goLoginUser cbLoadBack ...');
+            if (info.status == 'OK') {
+                M.ctBakeryUser.user = info.user;
+                M.goPageLink(link, null);
+            }
+        })
     },
     
     loadPage: function(page, info) {
@@ -208,61 +239,6 @@ var M = {
 
         $.ajax(option);
     });
-    },
-    
-    getValidAccessToken: function() {
-    return new Promise((resolve, reject) => {
-        var user = M.getItemStorage('user')
-        if (!user) {
-            resolve(null);
-            return;
-        }
-        
-        var accessTokenItem = user.accessTokenItem;
-        if (!accessTokenItem || M.isTokenExpired(accessTokenItem)) {
-            var refreshTokenItem = user.refreshTokenItem;
-            if (!refreshTokenItem || M.isTokenExpired(refreshTokenItem)) {
-                reject({ logout: true });
-                return;
-            }
-
-            var host = !!M.isDEV ? M.hostDebug : M.hostService;
-            var refreshToken = refreshTokenItem.token || '';
-            $.ajax({
-                method: 'POST',
-                url: host + '/bakery-api/user/getAccessToken',
-                contentType: 'application/json',
-                data: JSON.stringify({ token: refreshToken }),
-                timeout: 5000,
-                success: function(ret) {
-
-                    if (ret.status !== "OK") {
-                        reject({ status: ret.status || "FAIL", reason: ret.reason || "Unknown error" });
-                        return;
-                    }
-
-                    user.accessTokenItem = ret.accessTokenItem;
-                    M.setItemStorage('user', user);
-                    resolve(user.accessTokenItem);
-                },
-                error: function(xhr, status, error) {
-                    console.log('xhr, status, error= ', { xhr, status, error });
-                    reject({ logout: true });
-                }
-            });
-
-            return;
-        }
-        resolve(accessTokenItem);
-    });
-    },
-    
-    isTokenExpired: function(token) {
-        if (!token) return true;
-        if (!token.expire) return true;
-    
-        var now = Date.now();
-        return now > token.expire;
     },
 
     setItemStorage: function(key, data) {

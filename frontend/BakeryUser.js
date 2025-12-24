@@ -61,6 +61,7 @@ window.bakery.BakeryUser.prototype = function() {
 				data: JSON.stringify(req),
 				contentType: 'application/json',
 				timeout: 30*1000, // 30 sec
+				xhrFields: { withCredentials: true },
 				success: function (ret) {
 					M.hideLoader();
 					if (ret.status !== 'OK') {
@@ -69,8 +70,9 @@ window.bakery.BakeryUser.prototype = function() {
 					}
 		
 					M.setItemStorage('user', ret.user);
-					if (!M.requireLogin()) {
-						M.goPageLink();
+					
+					if (self.cbLoadBack) {
+						self.cbLoadBack.call(null, ret);
 					}
 				},
 				error: function (xhr, status, error) {
@@ -114,6 +116,7 @@ window.bakery.BakeryUser.prototype = function() {
 				data: JSON.stringify(req),
 				contentType: 'application/json',
 				timeout: 30*1000, // 30 sec
+				xhrFields: { withCredentials: true },
 				success: function (ret) {
 					M.hideLoader();
 					if (ret.status !== 'OK') {
@@ -140,10 +143,12 @@ window.bakery.BakeryUser.prototype = function() {
 		});
 	};
 
-	var onLoadDone = function() {
-		if (self.cbLoadDone) {
-			self.cbLoadDone.call(null);
-		}
+	var doLoginUser = function(info, cbLoadDone, cbLoadBack) {
+		self.info = info;
+		self.cbLoadDone = cbLoadDone;
+		self.cbLoadBack = cbLoadBack;
+
+		self.cbLoadDone.call(null);
 	};
 
 	var onLoadDone = function() {
@@ -163,7 +168,9 @@ window.bakery.BakeryUser.prototype = function() {
     var publicFunctions = {
 		init: init,
 		load: load, 
-		about: about
+		about: about,
+
+		doLoginUser: doLoginUser
 	};
 	return publicFunctions;
 }();
