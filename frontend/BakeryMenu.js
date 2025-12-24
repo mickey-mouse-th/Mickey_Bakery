@@ -21,6 +21,7 @@ M.initMENU = function() {
     var user_form = {};
 
     var share_page = {};
+    share_page['login'] = 'BakeryUser';
     share_page['user-recipe'] = 'BakeryUserRecipe';
 
     var share_form = {};
