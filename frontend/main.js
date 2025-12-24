@@ -190,6 +190,7 @@ var M = {
             method: method,
             url: url,
             timeout: timeout,
+            xhrFields: { withCredentials: true },
             success: function(ret) {
                 resolve(ret);
             },
