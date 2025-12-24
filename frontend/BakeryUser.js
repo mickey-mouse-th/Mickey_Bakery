@@ -1,177 +1,168 @@
-window.bakery = window.bakery || {};
-window.bakery.BakeryUser = function($scope) {
+var BakeryUser = function($scope) {
     this.logPrefix = '[BakeryUser] ';
-}
+};
 
-window.bakery.BakeryUser.prototype = function() {
-    var self = this;
-    var init = function ($scope, cb) {
-		self = this;
-		self.$scope = $scope || $('#none');
-		self.cb = cb;
-		log('init ..', self);
-		initPageControl();
-		// initFormControls();
-		// initCustomControls();
-		// onInitDone();
-		log('init DONE', this);
-	};
+BakeryUser.prototype.init = function ($scope, cb) {
+	var form = this;
+	form.$scope = $scope || $('#none');
+	form.cb = cb;
+	form.log('init ..', form);
+	form.initPageControl();
+	// initFormControls();
+	// initCustomControls();
+	// onInitDone();
+	form.log('init DONE', this);
+};
 
-	var load = function(info, cbLoadDone, cbPageBack) {
-		log('load at ' + new Date().toISOString(), info);
-		self.info = info;
-		self.cbLoadDone = cbLoadDone;
-		self.cbPageBack = cbPageBack;
+BakeryUser.prototype.load = function(info, cbLoadDone, cbPageBack) {
+	var form = this;
+	form.log('load at ' + new Date().toISOString(), info);
+	form.info = info;
+	form.cbLoadDone = cbLoadDone;
+	form.cbPageBack = cbPageBack;
 
-		// Clear Filter
-		self.$scope.find(':input.txtSearch').val("");
+	// Clear Filter
+	form.$scope.find(':input.txtSearch').val("");
 
-		// doLoad();
-		onLoadDone();
-	};
+	// doLoad();
+	form.onLoadDone();
+};
 
-	var initPageControl = function() {
-		var $divLogin = self.$scope.find('.divLogin');
-		var $username = $divLogin.find('[data-fld="username"]');
-		var $password = $divLogin.find('[data-fld="password"]');
-		var $divRegisterModal = self.$scope.find('.divRegisterModal');
-		
-		$divLogin.on('click', '.btnLogin', function () {
-			var deviceId = M.getItemStorage('deviceId');
-			if (!deviceId) {
-				deviceId = crypto.randomUUID();
-				M.setItemStorage('deviceId', deviceId);
-			}
-		
-			var req = {
-				username: ($username.val() || '').trim(),
-				password: ($password.val() || '').trim(),
-				deviceOS: navigator.userAgent || 'Unknown',
-				deviceName: navigator.platform || 'Unknown',
-				deviceId: deviceId
-			};
-		
-			var host = !!M.isDEV ? M.hostDebug : M.hostService;
-			var url = host + '/bakery-api/user/login';
-		
-			M.showLoader();
-			$.ajax({
-				method: "POST",
-				url: url,
-				data: JSON.stringify(req),
-				contentType: 'application/json',
-				timeout: 30*1000, // 30 sec
-				xhrFields: { withCredentials: true },
-				success: function (ret) {
-					M.hideLoader();
-					if (ret.status !== 'OK') {
-						M.showNotification('something went wrong', 'fail');
-						return;
-					}
-		
-					M.setItemStorage('user', ret.user);
-					
-					if (self.cbLoadBack) {
-						self.cbLoadBack.call(null, ret);
-					}
-				},
-				error: function (xhr, status, error) {
-					M.hideLoader();
-					var responseJSON = xhr.responseJSON || {};
-					var reason = responseJSON.reason || "Login failed";
-					M.showNotification(reason, 'fail');
-				}
-			});
-		});
-		
-		$divLogin.on('click', '.btnRegister', function () {
-			$divRegisterModal.find('[data-fld="name"]').val('');
-			$divRegisterModal.find('[data-fld="username"]').val('');
-			$divRegisterModal.find('[data-fld="password"]').val('');
-			$divRegisterModal.removeClass('hidden').addClass('flex');
-		});
-		$divRegisterModal.on('click', '.btnCloseModal', function () {
-			$divRegisterModal.addClass('hidden').removeClass('flex');
-		});
-		$divRegisterModal.on('click', '.btnRegisterSubmit', function () {
-		
-			var req = {
-				name: ($divRegisterModal.find('[data-fld="name"]').val() || '').trim(),
-				username: ($divRegisterModal.find('[data-fld="username"]').val() || '').trim(),
-				password: ($divRegisterModal.find('[data-fld="password"]').val() || '').trim()
-			};
-		
-			if (!req.name || !req.username || !req.password) {
-				M.showNotification('กรุณากรอกข้อมูลให้ครบ', 'fail');
-				return;
-			}
-		
-			var host = !!M.isDEV ? M.hostDebug : M.hostService;
-			var url = host + '/bakery-api/user/register';
-			
-			M.showLoader();
-			$.ajax({
-				method: "POST",
-				url: url,
-				data: JSON.stringify(req),
-				contentType: 'application/json',
-				timeout: 30*1000, // 30 sec
-				xhrFields: { withCredentials: true },
-				success: function (ret) {
-					M.hideLoader();
-					if (ret.status !== 'OK') {
-						if (ret.reason === 'USERNAME_EXISTS') {
-							M.showNotification('ชื่อผู้ใช้นี้มีอยู่แล้ว', 'fail');
-							return;
-						}
-
-						M.showNotification(ret.reason || 'สมัครสมาชิกไม่สำเร็จ', 'fail');
-						return;
-					}
-		
-					$divRegisterModal.addClass('hidden').removeClass('flex');
-					M.showNotification('สมัครสมาชิกสำเร็จ', 'done');
-					M.goPageLink();
-				},
-				error: function (xhr) {
-					M.hideLoader();
-					var responseJSON = xhr.responseJSON || {};
-					var reason = responseJSON.reason || 'Register failed';
-					M.showNotification(reason, 'fail');
-				}
-			});
-		});
-	};
-
-	var doLoginUser = function(info, cbLoadDone, cbLoadBack) {
-		self.info = info;
-		self.cbLoadDone = cbLoadDone;
-		self.cbLoadBack = cbLoadBack;
-
-		self.cbLoadDone.call(null);
-	};
-
-	var onLoadDone = function() {
-		if (self.cbLoadDone) {
-			self.cbLoadDone.call(null);
+BakeryUser.prototype.initPageControl = function() {
+	var form = this;
+	var $divLogin = form.$scope.find('.divLogin');
+	var $username = $divLogin.find('[data-fld="username"]');
+	var $password = $divLogin.find('[data-fld="password"]');
+	var $divRegisterModal = form.$scope.find('.divRegisterModal');
+	
+	$divLogin.on('click', '.btnLogin', function () {
+		var deviceId = M.getItemStorage('deviceId');
+		if (!deviceId) {
+			deviceId = crypto.randomUUID();
+			M.setItemStorage('deviceId', deviceId);
 		}
-	};
+	
+		var req = {
+			username: ($username.val() || '').trim(),
+			password: ($password.val() || '').trim(),
+			deviceOS: navigator.userAgent || 'Unknown',
+			deviceName: navigator.platform || 'Unknown',
+			deviceId: deviceId
+		};
+	
+		var host = !!M.isDEV ? M.hostDebug : M.hostService;
+		var url = host + '/bakery-api/user/login';
+	
+		M.showLoader();
+		$.ajax({
+			method: "POST",
+			url: url,
+			data: JSON.stringify(req),
+			contentType: 'application/json',
+			timeout: 30*1000, // 30 sec
+			xhrFields: { withCredentials: true },
+			success: function (ret) {
+				M.hideLoader();
+				if (ret.status !== 'OK') {
+					M.showNotification('something went wrong', 'fail');
+					return;
+				}
+	
+				M.setItemStorage('user', ret.user);
+				
+				if (form.cbLoadBack) {
+					form.cbLoadBack.call(null, ret);
+				}
+			},
+			error: function (xhr, status, error) {
+				M.hideLoader();
+				var responseJSON = xhr.responseJSON || {};
+				var reason = responseJSON.reason || "Login failed";
+				M.showNotification(reason, 'fail');
+			}
+		});
+	});
+	
+	$divLogin.on('click', '.btnRegister', function () {
+		$divRegisterModal.find('[data-fld="name"]').val('');
+		$divRegisterModal.find('[data-fld="username"]').val('');
+		$divRegisterModal.find('[data-fld="password"]').val('');
+		$divRegisterModal.removeClass('hidden').addClass('flex');
+	});
+	$divRegisterModal.on('click', '.btnCloseModal', function () {
+		$divRegisterModal.addClass('hidden').removeClass('flex');
+	});
+	$divRegisterModal.on('click', '.btnRegisterSubmit', function () {
+	
+		var req = {
+			name: ($divRegisterModal.find('[data-fld="name"]').val() || '').trim(),
+			username: ($divRegisterModal.find('[data-fld="username"]').val() || '').trim(),
+			password: ($divRegisterModal.find('[data-fld="password"]').val() || '').trim()
+		};
+	
+		if (!req.name || !req.username || !req.password) {
+			M.showNotification('กรุณากรอกข้อมูลให้ครบ', 'fail');
+			return;
+		}
+	
+		var host = !!M.isDEV ? M.hostDebug : M.hostService;
+		var url = host + '/bakery-api/user/register';
+		
+		M.showLoader();
+		$.ajax({
+			method: "POST",
+			url: url,
+			data: JSON.stringify(req),
+			contentType: 'application/json',
+			timeout: 30*1000, // 30 sec
+			xhrFields: { withCredentials: true },
+			success: function (ret) {
+				M.hideLoader();
+				if (ret.status !== 'OK') {
+					if (ret.reason === 'USERNAME_EXISTS') {
+						M.showNotification('ชื่อผู้ใช้นี้มีอยู่แล้ว', 'fail');
+						return;
+					}
 
-    var log = function (data) {
-        console.log(self.logPrefix, data);
-    };
+					M.showNotification(ret.reason || 'สมัครสมาชิกไม่สำเร็จ', 'fail');
+					return;
+				}
+	
+				$divRegisterModal.addClass('hidden').removeClass('flex');
+				M.showNotification('สมัครสมาชิกสำเร็จ', 'done');
+				M.goPageLink();
+			},
+			error: function (xhr) {
+				M.hideLoader();
+				var responseJSON = xhr.responseJSON || {};
+				var reason = responseJSON.reason || 'Register failed';
+				M.showNotification(reason, 'fail');
+			}
+		});
+	});
+};
 
-    var about = function() {
-        log('about call');
-    };
+BakeryUser.prototype.doLoginUser = function(info, cbLoadDone, cbLoadBack) {
+	var form = this;
+	form.info = info;
+	form.cbLoadDone = cbLoadDone;
+	form.cbLoadBack = cbLoadBack;
 
-    var publicFunctions = {
-		init: init,
-		load: load, 
-		about: about,
+	form.onLoadDone();
+};
 
-		doLoginUser: doLoginUser
-	};
-	return publicFunctions;
-}();
+BakeryUser.prototype.onLoadDone = function() {
+	var form = this;
+	if (form.cbLoadDone) {
+		form.cbLoadDone.call(null);
+	}
+};
+
+BakeryUser.prototype.log = function (data) {
+	console.log(form.logPrefix, data);
+};
+
+BakeryUser.prototype.about = function() {
+	log('about call');
+};
 //# sourceURL=BakeryUser.js

@@ -56,7 +56,7 @@ var M = {
     },
 
     initUser: function(cb) {
-        M.ctBakeryUser = new window['bakery']['BakeryUser'](M.$portal);
+        M.ctBakeryUser = new BakeryUser(M.$portal);
 		M.ctBakeryUser.init(function() {
 			if (cb) cb.call(null, M.user);
 		});
