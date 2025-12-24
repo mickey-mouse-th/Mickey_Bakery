@@ -18,7 +18,9 @@ var M = {
 
     init: function() {
         M.initMENU();
-        M.initUser();
+        M.initUser(function() {
+            M.goPageLink(location.hash.slice(2));
+        });
 
         M.$portal.on('click', '.btnLogout', function() {
             M.clearStorage();
@@ -62,48 +64,15 @@ var M = {
 		});
     },
 
-    // TODO เข้า link ตรงได้อยู่
-    requireLogin: function(opts) {
-        var user = M.getItemStorage('user');
-        if (!user) {
-            M.main = 'login';
-            M.mode = M.SHARE;
-            return null;
-        }
-
-        var role = M.roleTypeMap[Number(user.roleType)] || M.USER;
-        if (opts && opts.adminOnly && role != M.ADMIN) {
-            M.main = 'user-recipe';
-            M.mode = '';
-            return null;
-        }
-        var hash = window.location.hash || '';
-        if (!hash) {
-            M.main = '';
-            M.mode = role;
-            return null;
-        }
-        var split = hash.split('/');
-        if (split.length === 3) {
-            M.main = split[2] || '';
-            M.mode = split[1] || '';
-            return null;
-
-        } else if (split.length === 2) {
-            M.main = split[1] || '';
-            M.mode = role;
-            return null;
-        }
-        
-        return user;
-    },
-
 
     goPageLink: function(link, item) {
         var mode = M.mode || "user";
+        if (!link) {
+            var hashList = location.hash.slice(2).split('/');
+            mode = hashList[0];
+            link = hashList.slice(1).join('/');
+        } 
         var menu = link.split('/')[0] || M.main || '';
-		var more = link.split('/').slice(1).join('/');
-        
         if (M.ctBakeryUser) {
             if (M.ctBakeryUser.user) {
                 // authen OK
