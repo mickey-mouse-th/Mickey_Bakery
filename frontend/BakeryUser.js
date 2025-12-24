@@ -67,11 +67,6 @@ BakeryUser.prototype.initPageControl = function() {
 					M.showNotification('something went wrong', 'fail');
 					return;
 				}
-	
-				form.user = crypto.randomUUID();
-				ret.user.user = form.user;
-				M.setItemStorage('user', ret.user);
-				
 				if (form.cbLoadBack) {
 					form.cbLoadBack.call(null, ret);
 				}
@@ -83,6 +78,14 @@ BakeryUser.prototype.initPageControl = function() {
 				M.showNotification(reason, 'fail');
 			}
 		});
+
+		form.$scope.on('click', '.btnLogout', function() {
+            M.callServer('POST', 'bakery-api/user/logout')
+			.finally(() => {
+				M.clearStorage();
+				location.reload();
+			});
+        });
 	});
 	
 	$divLogin.on('click', '.btnRegister', function () {

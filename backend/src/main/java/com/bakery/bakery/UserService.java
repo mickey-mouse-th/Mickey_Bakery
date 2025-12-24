@@ -32,6 +32,8 @@ public class UserService implements ApiHandler {
             case "load": load(req, res); break;
             case "changeRoleType": changeRoleType(req, res); break;
             
+            case "me": me(req, res); break;
+            
             default:  ResUtils.responseJsonResult(res, Map.of("error", "Unknown action: " + action));
         }
     }
@@ -174,6 +176,17 @@ public class UserService implements ApiHandler {
         SqlUtils sql = new SqlUtils();
         sql.update("Account", info);
         
+        ResUtils.responseJsonResult(res, Map.of("status", "OK"));
+    }
+    
+    public void me(HttpServletRequest req, HttpServletResponse res) {
+    	HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("accId") == null) {
+        	ResUtils.responseJsonResult(res, 401, Map.of("status", "NO", "reason", "unauthorized"));
+        	return;
+        }
+        
+        session.setMaxInactiveInterval(30 * 60);
         ResUtils.responseJsonResult(res, Map.of("status", "OK"));
     }
 }

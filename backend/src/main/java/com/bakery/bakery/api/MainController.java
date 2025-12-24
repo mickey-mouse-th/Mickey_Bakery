@@ -29,13 +29,13 @@ public class MainController {
         	return;
         }
         
-        if (("user".equals(module) && ("register".equals(action) || "login".equals(action))) || "test".equals(module)) {
+        if (("user".equals(module) && ("register".equals(action) || "login".equals(action) || "me".equals(action))) || "test".equals(module)) {
         	// skip authorize
         	
         } else {
         	HttpSession session = req.getSession(false);
             if (session == null || session.getAttribute("accId") == null) {
-            	ResUtils.responseJsonResult(res, Map.of("status", "NO", "reason", "Unauthorized"));
+            	ResUtils.responseJsonResult(res, 401, Map.of("status", "NO", "reason", "Unauthorized"));
             }
         }
 

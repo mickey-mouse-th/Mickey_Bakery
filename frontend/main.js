@@ -22,11 +22,6 @@ var M = {
             M.goPageLink(location.hash.slice(2));
         });
 
-        M.$portal.on('click', '.btnLogout', function() {
-            M.clearStorage();
-            window.location.href = '';
-        });
-
         // TODO Fix
         var drawer = M.$portal.find("#mobileDrawer");
         var backdrop = M.$portal.find("#mobileDrawer-backdrop");
@@ -59,9 +54,20 @@ var M = {
 
     initUser: function(cb) {
         M.ctBakeryUser = new BakeryUser(M.$portal);
-		M.ctBakeryUser.init(function() {
-			if (cb) cb.call(null, M.user);
-		});
+        M.ctBakeryUser.init(function() {
+            M.callServer('GET', 'bakery-api/user/me')
+            .then(ret => {
+                if (ret.status === 'OK') {
+                    M.ctBakeryUser.user = ret.user;
+                    cb && cb(ret.user);
+                } else {
+                    M.goLoginUser();
+                }
+            })
+            .catch(() => {
+                M.goLoginUser();
+            });
+        });
     },
 
 
@@ -92,19 +98,24 @@ var M = {
 
         var info = {
             type: 'link', 
-            link: more,
+            link: link,
             item: item
         }
         M.loadPage(page, info);
     },
 
     goLoginUser: function(link, menu) {
+        if (M._onLoginPage) return;
+        M._onLoginPage = true;
+
         M.$portal.find('.divLoginPage').removeClass('hidden');
         M.ctBakeryUser.doLoginUser({link: link, menu: menu}, function() {
             console.log('goLoginUser cbLoadDone ...');
         }, function(info) {
             console.log('goLoginUser cbLoadBack ...');
             if (info.status == 'OK') {
+                M._onLoginPage = false;
+                M._handling401 = false;
                 M.ctBakeryUser.user = info.user;
                 M.goPageLink(link, null);
             }
@@ -283,3 +294,15 @@ var M = {
         console.log('[MAIN]')
     }
 }
+
+$(document).ajaxError(function (e, xhr) {
+    if (xhr && xhr.status === 401) {
+        console.warn('Session expired (401)');
+
+        if (M._handling401) return;
+        M._handling401 = true;
+
+        M.clearStorage();
+        M.goLoginUser();
+    }
+});
