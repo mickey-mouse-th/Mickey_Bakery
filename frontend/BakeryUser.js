@@ -1,10 +1,10 @@
 var BakeryUser = function($scope) {
     this.logPrefix = '[BakeryUser] ';
+	this.$scope = $scope || $('#none');
 };
 
-BakeryUser.prototype.init = function ($scope, cb) {
+BakeryUser.prototype.init = function (cb) {
 	var form = this;
-	form.$scope = $scope || $('#none');
 	form.cb = cb;
 	form.log('init ..', form);
 	form.initPageControl();
