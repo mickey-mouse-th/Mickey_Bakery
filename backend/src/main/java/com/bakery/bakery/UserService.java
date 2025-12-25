@@ -121,7 +121,7 @@ public class UserService implements ApiHandler {
             session.invalidate();
             
             QBakery qb = new QBakery();
-            qb.addTable("loginHistory").filter("id", accId, "deviceId", deviceId).field("id, deviceId");
+            qb.addTable("loginHistory").filter("accId", accId, "deviceId", deviceId).field("id, accId, deviceId");
             List<Map<String, Object>> loginHistoryList = qb.listData();
             loginHistoryList.stream().forEach(o -> o.put("logoutDate", OffsetDateTime.now()));
             
