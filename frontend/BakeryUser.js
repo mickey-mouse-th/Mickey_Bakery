@@ -78,14 +78,14 @@ BakeryUser.prototype.initPageControl = function() {
 				M.showNotification(reason, 'fail');
 			}
 		});
+	});
 
-		form.$scope.on('click', '.btnLogout', function() {
-            M.callServer('POST', 'bakery-api/user/logout')
-			.finally(() => {
-				M.clearStorage();
-				location.reload();
-			});
-        });
+	form.$scope.on('click', '.btnLogout', function() {
+		M.callServer('POST', 'bakery-api/user/logout')
+		.finally(() => {
+			M.clearStorage();
+			location.reload();
+		});
 	});
 	
 	$divLogin.on('click', '.btnRegister', function () {
