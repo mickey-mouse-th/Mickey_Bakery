@@ -19,20 +19,17 @@ var M = {
     init: function() {
         M.initMENU();
         M.initUser(function() {
-            M.goPageLink(location.hash.slice(2));
+            M.goPageLink();
         });
 
-        // TODO Fix
         var drawer = M.$portal.find("#mobileDrawer");
         var backdrop = M.$portal.find("#mobileDrawer-backdrop");
       
-        // เปิดเมนู
         M.$portal.find("#btn-ham").on("click", function () {
           drawer.removeClass("hidden").removeClass("translate-x-full");
           backdrop.removeClass("hidden");
         });
       
-        // ปิดเมนู
         M.$portal.find("#btn-close-drawer, #mobileDrawer-backdrop").on("click", function () {
           drawer.addClass("translate-x-full");
           setTimeout(() => drawer.addClass("hidden"), 300);
@@ -50,6 +47,10 @@ var M = {
             }
             location.hash = '#/' + M.mode + '/form:' + form + '/fid:' + fid;
         });
+
+        window.onhashchange = function(e) {
+            M.goPageLink();
+        };
     },
 
     initUser: function(cb) {

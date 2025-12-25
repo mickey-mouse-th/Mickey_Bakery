@@ -95,6 +95,11 @@ class QTable {
         countList.add(new Count(field, prefix, vals));
         return this;
     }
+    
+    public QTable count(String field, List<Object> vals, String prefix) {
+        countList.add(new Count(field, prefix, vals));
+        return this;
+    }
 
     private List<Object> fetchDistinctValues(String field) {
         List<Object> list = new ArrayList<>();

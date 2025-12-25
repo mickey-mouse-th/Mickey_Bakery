@@ -31,9 +31,8 @@ public class RecipeService implements ApiHandler {
     public void list(HttpServletRequest req, HttpServletResponse res) {
     	QBakery qb = new QBakery();
     	qb.addTable("Recipe").field("id recipeId, name recipeId_NAME");
-    	qb.addTable("RecipeLink").joinOn("recipeId").count("type", "count");
+    	qb.addTable("RecipeLink").joinOn("recipeId").count("type", List.of("S", "I"), "count");
     	qb.groupBy("recipeId", "recipeId_NAME");
-    	qb.isDiag = true;
     	List<Map<String, Object>> list = qb.listData();
 
         ResUtils.responseJsonResult(res, Map.of("status", "OK", "list", list));
