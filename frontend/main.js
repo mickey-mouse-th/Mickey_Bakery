@@ -124,6 +124,7 @@ var M = {
                 M.ctBakeryUser.user = user;
                 M.mode = user.roleType == 1 ? M.ADMIN : M.USER;
 
+                M.$portal.find('.divLoginPage').addClass('hidden');
                 M.goPageLink(link, null);
             }
         })
