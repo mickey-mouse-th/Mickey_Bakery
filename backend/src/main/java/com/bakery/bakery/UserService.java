@@ -181,13 +181,22 @@ public class UserService implements ApiHandler {
     
     public void me(HttpServletRequest req, HttpServletResponse res) {
     	HttpSession session = req.getSession(false);
+    	Long accId = (Long) session.getAttribute("accId");
         if (session == null || session.getAttribute("accId") == null) {
         	ResUtils.responseJsonResult(res, 401, Map.of("status", "NO", "reason", "unauthorized"));
         	return;
         }
         
         session.setMaxInactiveInterval(30 * 60);
-        ResUtils.responseJsonResult(res, Map.of("status", "OK"));
+        
+        QBakery qb = new QBakery();
+        qb.addTable("Account").filter("id", accId).field("id accId, name, roleType, tagList");
+        List<Map<String, Object>> list = qb.listData();
+        
+        Map<String, Object> user = list.size() > 0 ? list.get(0) : null;
+        
+        
+        ResUtils.responseJsonResult(res, Map.of("status", "OK", "user", user));
     }
 }
 

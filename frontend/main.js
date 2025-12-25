@@ -58,8 +58,10 @@ var M = {
             M.callServer('GET', 'bakery-api/user/me')
             .then(ret => {
                 if (ret.status === 'OK') {
-                    M.ctBakeryUser.user = ret.user;
-                    cb && cb(ret.user);
+                    var user = ret.user;
+                    M.ctBakeryUser.user = user;
+                    M.mode = user.roleType == 1 ? M.ADMIN : M.USER;
+                    cb && cb(user);
                 } else {
                     M.goLoginUser();
                 }
@@ -72,13 +74,12 @@ var M = {
 
 
     goPageLink: function(link, item) {
-        var mode = M.mode || "user";
+        var mode = M.mode || "share";
         if (!link) {
             var hashList = location.hash.slice(2).split('/');
-            mode = hashList[0];
             link = hashList.slice(1).join('/');
         } 
-        var menu = link.split('/')[0] || M.main || '';
+        var menu = link.split('/')[0] || '';
         if (M.ctBakeryUser) {
             if (M.ctBakeryUser.user) {
                 // authen OK
