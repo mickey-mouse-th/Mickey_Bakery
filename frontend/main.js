@@ -118,6 +118,11 @@ var M = {
                 M._onLoginPage = false;
                 M._handling401 = false;
                 M.ctBakeryUser.user = info.user;
+                
+                var user = info.user;
+                M.ctBakeryUser.user = user;
+                M.mode = user.roleType == 1 ? M.ADMIN : M.USER;
+
                 M.goPageLink(link, null);
             }
         })
