@@ -183,6 +183,7 @@ var M = {
     path = path.replace(/^\/+/, '');
     data = data || {};
 
+    M.showLoader();
     return new Promise((resolve, reject) => {
         if (!path) {
             reject('No path to call');
@@ -204,9 +205,11 @@ var M = {
             timeout: timeout,
             xhrFields: { withCredentials: true },
             success: function(ret) {
+                M.hideLoader();
                 resolve(ret);
             },
             error: function(xhr, status, error) {
+                M.hideLoader();
                 reject({ xhr, status, error });
             }
         };
