@@ -86,7 +86,7 @@ public class SqlUtils {
             for (Map<String, Object> data : dataList) {
                 if (!data.containsKey("id")) continue;
                 Object id = data.get("id");
-                String sql = buildUpdateSQL(table, data) + " WHERE id = ?";
+                String sql = buildUpdateSQL(table, data) + " WHERE \"id\" = ?";
                 try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                     List<Object> params = new ArrayList<>(data.values());
                     stmt.setObject(params.size(), id);
@@ -156,7 +156,7 @@ public class SqlUtils {
         StringBuilder sb = new StringBuilder();
         sb.append("UPDATE ").append("\"").append(table).append("\"").append(" SET ");
         sb.append(String.join(", ", data.keySet().stream().filter(k -> !k.equals("id"))
-                .map(k -> k + " = ?").toList()));
+                .map(k -> "\"" + k + "\" = ?").toList()));
         return sb.toString();
     }
 
